@@ -53,251 +53,158 @@ import java.util.function.UnaryOperator;
 // @@@ Specification to-do list @@@
 
 /**
- * 要素の列であり逐次的および並列的バルク処理を備える。
- * Streams support lazy intermediate operations (transforming a stream to
- * another stream) such as {@code filter} and {@code map}, and terminal
- * operations (consuming the contents of a stream to produce a result or
- * side-effect), such as {@code forEach}, {@code findFirst}, and {@code
- * iterator}.  Once an operation has been performed on a stream, it
- * is considered <em>consumed</em> and no longer usable for other operations.
+ * 要素の列であり、逐次的および並列的バルク処理を備える。
+ * ストリームは{@code filter}や{@code map}といった遅延的な中間処理(ストリームを他のストリームに変換する)と、{@code forEach}や{@code findFirst}や{@codeiterator}といった末端処理(ストリームの内容を消費して結果や副作用を生じる)を備える。ストリームに対して処理が実行されると、ストリームは<em>消費された</em>とみなされ、他の処理には使えなくなる。
  *
- * <p>For sequential stream pipelines, all operations are performed in the
- * <a href="package-summary.html#Ordering">encounter order</a> of the pipeline
- * source, if the pipeline source has a defined encounter order.
+ * <p>逐次的なストリームパイプラインの場合、パイプラインのデータ源に<a href="package-summary.html#Ordering">出現順順序</a>が定義されていれば、全ての処理はその出現順順序に従って実行される。
  *
- * <p>For parallel stream pipelines, unless otherwise specified, intermediate
- * stream operations preserve the <a href="package-summary.html#Ordering">
- * encounter order</a> of their source, and terminal operations
- * respect the encounter order of their source, if the source
- * has an encounter order.  Provided that and parameters to stream operations
- * satisfy the <a href="package-summary.html#NonInterference">non-interference
- * requirements</a>, and excepting differences arising from the absence of
- * a defined encounter order, the result of a stream pipeline should be the
- * stable across multiple executions of the same operations on the same source.
- * However, the timing and thread in which side-effects occur (for those
- * operations which are allowed to produce side-effects, such as
- * {@link #forEach(Consumer)}), are explicitly nondeterministic for parallel
- * execution of stream pipelines.
+ * <p>並列的なストリームパイプラインの場合、特に明記されていないかぎり、パイプラインのデータ源に<a href="package-summary.html#Ordering">出現順順序</a>が定義されていれば、中間ストリーム処理はデータ源の出現順順序を保存し、末端処理はデータ源の出現順順序を尊重する。ストリーム処理に対する引数が<a href="package-summary.html#NonInterference">非干渉性要求</a>を満たす場合、出現順順序が無い場合に起きる違いを除いて、同じデータ源に対して同じ処理を複数実行した結果は変化しない。しかし、ストリームパイプラインの並列実行において、({@link #forEach(Consumer)}のような副作用を起こしてもよい処理から)副作用が生じるタイミングとスレッドは明示的に非決定的である。
  *
- * <p>Unless otherwise noted, passing a {@code null} argument to any stream
- * method may result in a {@link NullPointerException}.
+ * <p>特に明記していない限り、ストリームメソッドに対して{@code null}引数を与えると{@link NullPointerException}となる場合がある。
  *
  * @apiNote
- * Streams are not data structures; they do not manage the storage for their
- * elements, nor do they support access to individual elements.  However,
- * you can use the {@link #iterator()} or {@link #spliterator()} operations to
- * perform a controlled traversal.
+ * ストリームはデータ構造でない。ストリームは要素のために保存領域を管理しないし、個々の要素へのアクセス手段を用意しない。しかし、{@link #iterator()}や{@link #spliterator()}を使うと制御された走査ができる。
  *
- * @param <T> type of elements
+ * @param <T> 要素の型
  * @since 1.8
  * @see <a href="package-summary.html">java.util.stream</a>
  */
 public interface Stream<T> extends BaseStream<T, Stream<T>> {
 
     /**
-     * Returns a stream consisting of the elements of this stream that match
-     * the given predicate.
+     * このストリームの要素のうち、与えられた述語に適合する要素からなるストリームを返す。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @param predicate a <a href="package-summary.html#NonInterference">
-     *                  non-interfering, stateless</a> predicate to apply to
-     *                  each element to determine if it should be included
-     * @return the new stream
+     * @param predicate 各要素に適用して、要素を含むべきかどうか決めるための<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>述語
+     * @return 新しいストリーム
      */
     Stream<T> filter(Predicate<? super T> predicate);
 
     /**
-     * Returns a stream consisting of the results of applying the given
-     * function to the elements of this stream.
+     * このストリームの要素に与えられた関数を適用した結果からなるストリームを返す。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @param <R> The element type of the new stream
-     * @param mapper a <a href="package-summary.html#NonInterference">
-     *               non-interfering, stateless</a> function to apply to each
-     *               element
-     * @return the new stream
+     * @param <R> 新しいストリームの要素型
+     * @param mapper 各要素に適用する、<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数
+     * @return 新しいストリーム
      */
     <R> Stream<R> map(Function<? super T, ? extends R> mapper);
 
     /**
-     * Returns an {@code IntStream} consisting of the results of applying the
-     * given function to the elements of this stream.
+     * このストリームの要素に与えられた関数を適用した結果からなる{@code IntStream}を返す。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">
-     *     intermediate operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @param mapper a <a href="package-summary.html#NonInterference">
-     *               non-interfering, stateless</a> function to apply to each
-     *               element
-     * @return the new stream
+     * @param mapper 各要素に適用する、<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数
+     * @return 新しいストリーム
      */
     IntStream mapToInt(ToIntFunction<? super T> mapper);
 
     /**
-     * Returns a {@code LongStream} consisting of the results of applying the
-     * given function to the elements of this stream.
+     * このストリームの要素に与えられた関数を適用した結果からなる{@code LongStream}を返す。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @param mapper a <a href="package-summary.html#NonInterference">
-     *               non-interfering, stateless</a> function to apply to each
-     *               element
-     * @return the new stream
+     * @param mapper 各要素に適用する、<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数
+     * @return 新しいストリーム
      */
     LongStream mapToLong(ToLongFunction<? super T> mapper);
 
     /**
-     * Returns a {@code DoubleStream} consisting of the results of applying the
-     * given function to the elements of this stream.
+     * このストリームの要素に与えられた関数を適用した結果からなる{@code DoubleStream}を返す。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @param mapper a <a href="package-summary.html#NonInterference">
-     *               non-interfering, stateless</a> function to apply to each
-     *               element
-     * @return the new stream
+     * @param mapper 各要素に適用する、<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数
+     * @return 新しいストリーム
      */
     DoubleStream mapToDouble(ToDoubleFunction<? super T> mapper);
 
     /**
-     * Returns a stream consisting of the results of replacing each element of
-     * this stream with the contents of the stream produced by applying the
-     * provided mapping function to each element.  If the result of the mapping
-     * function is {@code null}, this is treated as if the result is an empty
-     * stream.
+     * 与えられた写像関数をこのストリームの各要素に適用して生成したストリームの内容で各要素を置き換えた結果からなるストリームを返す。もし写像関数の結果が{@code null}であれば、それは結果が空のストリームであるかのように扱われる。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
      * @apiNote
-     * The {@code flatMap()} operation has the effect of applying a one-to-many
-     * tranformation to the elements of the stream, and then flattening the
-     * resulting elements into a new stream. For example, if {@code orders}
-     * is a stream of purchase orders, and each purchase order contains a
-     * collection of line items, then the following produces a stream of line
-     * items:
+     * {@code flatMap()}処理は1対多変換をストリームの各要素に適用し、結果の要素を新しいストリームに平坦化する効果を持つ。例えば{@code orders}が注文書のストリームであり、各注文書が勘定項目の集合からなる場合、以下のコードは勘定項目のストリームを生成する。
      * <pre>{@code
      *     orderStream.flatMap(order -> order.getLineItems().stream())...
      * }</pre>
      *
-     * @param <R> The element type of the new stream
-     * @param mapper a <a href="package-summary.html#NonInterference">
-     *               non-interfering, stateless</a> function to apply to each
-     *               element which produces a stream of new values
-     * @return the new stream
+     * @param <R> 新しいストリームの要素型
+     * @param mapper 各要素に適用する、<a href="package-summary.html#NonInterference">非干渉的で状態を持たず</a>新しい値のストリームを生成する関数
+     * @return 新しいストリーム
      */
     <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper);
 
     /**
-     * Returns an {@code IntStream} consisting of the results of replacing each
-     * element of this stream with the contents of the stream produced by
-     * applying the provided mapping function to each element.  If the result of
-     * the mapping function is {@code null}, this is treated as if the result is
-     * an empty stream.
+     * 与えられた写像関数をこのストリームの各要素に適用して生成したストリームの内容で各要素を置き換えた結果からなる{@code IntStream}を返す。もし写像関数の結果が{@code null}であれば、それは結果が空のストリームであるかのように扱われる。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @param mapper a <a href="package-summary.html#NonInterference">
-     *               non-interfering, stateless</a> function to apply to each
-     *               element which produces a stream of new values
-     * @return the new stream
+     * @param mapper 各要素に適用する、<a href="package-summary.html#NonInterference">非干渉的で状態を持たず</a>新しい値のストリームを生成する関数
+     * @return 新しいストリーム
      */
     IntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper);
 
     /**
-     * Returns a {@code LongStream} consisting of the results of replacing each
-     * element of this stream with the contents of the stream produced
-     * by applying the provided mapping function to each element.  If the result
-     * of the mapping function is {@code null}, this is treated as if the
-     * result is an empty stream.
+     * 与えられた写像関数をこのストリームの各要素に適用して生成したストリームの内容で各要素を置き換えた結果からなる{@code LongStream}を返す。もし写像関数の結果が{@code null}であれば、それは結果が空のストリームであるかのように扱われる。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @param mapper a <a href="package-summary.html#NonInterference">
-     *               non-interfering, stateless</a> function to apply to
-     *               each element which produces a stream of new values
-     * @return the new stream
+     * @param mapper 各要素に適用する、<a href="package-summary.html#NonInterference">非干渉的で状態を持たず</a>新しい値のストリームを生成する関数
+     * @return 新しいストリーム
      */
     LongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper);
 
     /**
-     * Returns a {@code DoubleStream} consisting of the results of replacing each
-     * element of this stream with the contents of the stream produced
-     * by applying the provided mapping function to each element.  If the result
-     * of the mapping function is {@code null}, this is treated as if the result
-     * is an empty stream.
+     * 与えられた写像関数をこのストリームの各要素に適用して生成したストリームの内容で各要素を置き換えた結果からなる{@code DoubleStream}を返す。もし写像関数の結果が{@code null}であれば、それは結果が空のストリームであるかのように扱われる。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @param mapper a <a href="package-summary.html#NonInterference">
-     *               non-interfering, stateless</a> function to apply to each
-     *               element which produces a stream of new values
-     * @return the new stream
+     * @param mapper 各要素に適用する、<a href="package-summary.html#NonInterference">非干渉的で状態を持たず</a>新しい値のストリームを生成する関数
+     * @return 新しいストリーム
      */
     DoubleStream flatMapToDouble(Function<? super T, ? extends DoubleStream> mapper);
 
     /**
-     * Returns a stream consisting of the distinct elements (according to
-     * {@link Object#equals(Object)}) of this stream.
+     * このストリームの要素のうち({@link Object#equals(Object)}に従って)重複を除いた要素からなるストリームを返す。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">stateful
-     * intermediate operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">状態を持つ中間処理</a>である。
      *
-     * @return the new stream
+     * @return 新しいストリーム
      */
     Stream<T> distinct();
 
     /**
-     * Returns a stream consisting of the elements of this stream, sorted
-     * according to natural order.  If the elements of this stream are not
-     * {@code Comparable}, a {@code java.lang.ClassCastException} may be thrown
-     * when the stream pipeline is executed.
+     * このストリームの要素を、自然順にソートした結果からなるストリームを返す。もし要素が{@code Comparable}でなければ、ストリームパイプラインを実行した際に{@code java.lang.ClassCastException}が投げられる場合がある。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">stateful
-     * intermediate operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">状態を持つ中間処理</a>である。 
      *
-     * @return the new stream
+     * @return 新しいストリーム
      */
     Stream<T> sorted();
 
     /**
-     * Returns a stream consisting of the elements of this stream, sorted
-     * according to the provided {@code Comparator}.
+     * このストリームの要素を、与えられた{@code Comparator}に従ってソートした結果からなるストリームを返す。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">stateful
-     * intermediate operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">状態を持つ中間処理</a>である。 
      *
-     * @param comparator a <a href="package-summary.html#NonInterference">
-     *                   non-interfering, stateless</a> {@code Comparator} to
-     *                   be used to compare stream elements
-     * @return the new stream
+     * @param comparator ストリームの要素の比較に使われる<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>{@code Comparator}
+     * @return 新しいストリーム
      */
     Stream<T> sorted(Comparator<? super T> comparator);
 
     /**
-     * Returns a stream consisting of the elements of this stream, additionally
-     * performing the provided action on each element as elements are consumed
-     * from the resulting stream.
+     * このストリームの要素からなり、加えて要素が消費されるごとにその要素にアクションを実行するストリーム
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * <p>For parallel stream pipelines, the action may be called at
-     * whatever time and in whatever thread the element is made available by the
-     * upstream operation.  If the action modifies shared state,
-     * it is responsible for providing the required synchronization.
+     * <p>並列パイプラインの場合、上流の処理によって要素が利用可能になる任意の時間とスレッドでアクションは呼ばれる。もしアクションが共有状態を変更するならば、アクションは必要な同期処理を用意する責任を負う。
      *
-     * @apiNote This method exists mainly to support debugging, where you want
-     * to see the elements as they flow past a certain point in a pipeline:
+     * @apiNote このメソッドは主にデバッグの補助のために、パイプラインのある点を通過する要素を調べたいときのために存在する。
      * <pre>{@code
      *     list.stream()
      *         .filter(filteringFunction)
@@ -307,125 +214,89 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *         .collect(Collectors.intoList());
      * }</pre>
      *
-     * @param consumer a <a href="package-summary.html#NonInterference">
-     *                 non-interfering</a> action to perform on the elements as
-     *                 they are consumed from the stream
-     * @return the new stream
+     * @param consumer このストリームから要素が消費される際にその要素に適用される、<a href="package-summary.html#NonInterference">非干渉的</a>なアクション
+     * @return 新しいストリーム
      */
     Stream<T> peek(Consumer<? super T> consumer);
 
     /**
-     * Returns a stream consisting of the elements of this stream, truncated
-     * to be no longer than {@code maxSize} in length.
+     * このストリームの要素からなり、長さが{@code maxSize}より長くならないように切り詰められたストリームを返す。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
-     * stateful intermediate operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">短絡的で状態を持つ中間処理</a>である。
      *
-     * @param maxSize the number of elements the stream should be limited to
-     * @return the new stream
-     * @throws IllegalArgumentException if {@code maxSize} is negative
+     * @param maxSize ストリームを制限する要素数
+     * @return 新しいストリーム
+     * @throws IllegalArgumentException {@code maxSize}が負の場合
      */
     Stream<T> limit(long maxSize);
 
     /**
-     * Returns a stream consisting of the remaining elements of this stream
-     * after indexing {@code startInclusive} elements into the stream. If the
-     * {@code startInclusive} index lies past the end of this stream then an
-     * empty stream will be returned.
+     * このストリームの{@code startInclusive}個の要素を取り除いた残りの要素からなるストリームを返す。もし{@code startInclusive}がこのストリームの終わりの後にあるならば、空のストリームが返される。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">stateful
-     * intermediate operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">状態を持つ中間処理</a>である。
      *
-     * @param startInclusive the number of leading elements to skip
-     * @return the new stream
-     * @throws IllegalArgumentException if {@code startInclusive} is negative
+     * @param startInclusive スキップする先頭の要素数
+     * @return 新しいストリーム
+     * @throws IllegalArgumentException {@code startInclusive}が負の場合
      */
     Stream<T> substream(long startInclusive);
 
     /**
-     * Returns a stream consisting of the remaining elements of this stream
-     * after indexing {@code startInclusive} elements into the stream and
-     * truncated to contain no more than {@code endExclusive - startInclusive}
-     * elements. If the {@code startInclusive} index lies past the end
-     * of this stream then an empty stream will be returned.
+     * このストリームの{@code startInclusive}個の要素を取り除いた残りの要素からなり、{@code endExclusive - startInclusive}個より多くの要素を含まないように切り詰められたストリームを返す。もし{@code startInclusive}がこのストリームの終わりの後にあるならば、空のストリームが返される。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
-     * stateful intermediate operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">短絡的で状態を持つ中間処理</a>である。
      *
-     * @param startInclusive the starting position of the substream, inclusive
-     * @param endExclusive the ending position of the substream, exclusive
-     * @return the new stream
-     * @throws IllegalArgumentException if {@code startInclusive} or
-     * {@code endExclusive} is negative or {@code startInclusive} is greater
-     * than {@code endExclusive}
+     * @param startInclusive 子ストリームの開始位置。この位置を含む。
+     * @param endExclusive 子ストリームの終了位置。この位置を含まない。
+     * @return 新しいストリーム
+     * @throws IllegalArgumentException {@code startInclusive}や{@code endExclusive}が負である場合や、{@code startInclusive}が{@code endExclusive}より大きい場合
      */
     Stream<T> substream(long startInclusive, long endExclusive);
 
     /**
-     * Performs an action for each element of this stream.
+     * このストリームの各要素にアクションを適用する。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * <p>For parallel stream pipelines, this operation does <em>not</em>
-     * guarantee to respect the encounter order of the stream, as doing so
-     * would sacrifice the benefit of parallelism.  For any given element, the
-     * action may be performed at whatever time and in whatever thread the
-     * library chooses.  If the action accesses shared state, it is
-     * responsible for providing the required synchronization.
+     * <p>並列ストリームパイプラインの場合、この処理はストリームの出現順順序を尊重する<em>とは限らない</em>。そのようにしてしまうと並列処理の利点を犠牲にしてしまうためである。与えられた要素に対して、アクションはライブラリが選んだ任意の時間とスレッドで実行される。もしアクションが共有状態を変更するならば、アクションは必要な同期処理を用意する責任を負う。
      *
-     * @param action a <a href="package-summary.html#NonInterference">
-     *               non-interfering</a> action to perform on the elements
+     * @param action 各要素に適用される<a href="package-summary.html#NonInterference">非干渉的</a>なアクション
      */
     void forEach(Consumer<? super T> action);
 
     /**
-     * Performs an action for each element of this stream, guaranteeing that
-     * each element is processed in encounter order for streams that have a
-     * defined encounter order.
+     * このストリームの各要素にアクションを適用する。出現順順序を持つストリームに対しては、各要素は出現順順序で処理されると保証される。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @param action a <a href="package-summary.html#NonInterference">
-     *               non-interfering</a> action to perform on the elements
+     * @param action 各要素に適用される<a href="package-summary.html#NonInterference">非干渉的</a>なアクション
      * @see #forEach(Consumer)
      */
     void forEachOrdered(Consumer<? super T> action);
 
     /**
-     * Returns an array containing the elements of this stream.
+     * このストリームの要素からなる配列を返す。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @return an array containing the elements of this stream
+     * @return このストリームの要素からなる配列
      */
     Object[] toArray();
 
     /**
-     * Returns an array containing the elements of this stream, using the
-     * provided {@code generator} function to allocate the returned array.
+     * このストリームの要素からなる配列を返す。与えられた{@code generator}関数を使って返り値の配列を確保する。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @param <A> the element type of the resulting array
-     * @param generator a function which produces a new array of the desired
-     *                  type and the provided length
-     * @return an array containing the elements in this stream
-     * @throws ArrayStoreException if the runtime type of the array returned
-     * from the array generator is not a supertype of the runtime type of every
-     * element in this stream
+     * @param <A> 結果の配列の要素型
+     * @param generator 与えられた長さの要求された型の配列を生成する関数。
+     * @return このストリームの要素からなる配列
+     * @throws ArrayStoreException 配列生成関数から返された配列の実行時型がこのストリームの全ての要素の部分型でない場合
      */
     <A> A[] toArray(IntFunction<A[]> generator);
 
     /**
-     * Performs a <a href="package-summary.html#Reduction">reduction</a> on the
-     * elements of this stream, using the provided identity value and an
-     * <a href="package-summary.html#Associativity">associative</a>
-     * accumulation function, and returns the reduced value.  This is equivalent
-     * to:
+     * 与えられた単位元と、<a href="package-summary.html#Associativity">結合的</a>な累積関数を使って、このストリームの要素に<a href="package-summary.html#Reduction">簡約</a>処理を実行して簡約された値を返す。これは次と等しい。
      * <pre>{@code
      *     T result = identity;
      *     for (T element : this stream)
@@ -433,49 +304,34 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *     return result;
      * }</pre>
      *
-     * but is not constrained to execute sequentially.
+     * ただし逐次的に実行されるとは制約されていない。 
      *
-     * <p>The {@code identity} value must be an identity for the accumulator
-     * function. This means that for all {@code t},
-     * {@code accumulator.apply(identity, t)} is equal to {@code t}.
-     * The {@code accumulator} function must be an
-     * <a href="package-summary.html#Associativity">associative</a> function.
+     * <p>値{@code identity}は累積関数の単位元である必要がある。つまり、任意の{@code t}に対して{@code accumulator.apply(identity, t)}は{@code t}と等しい。{@code accumulator}関数は<a href="package-summary.html#Associativity">結合的</a>関数である必要がある。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @apiNote Sum, min, max, average, and string concatenation are all special
-     * cases of reduction. Summing a stream of numbers can be expressed as:
+     * @apiNote sum, min, max, average, 文字列連結は簡約の特別な場合である。数のストリームの合計は次のようにできる。
      *
      * <pre>{@code
      *     Integer sum = integers.reduce(0, (a, b) -> a+b);
      * }</pre>
      *
-     * or more compactly:
+     * もしくはより簡潔に次のようにできる。
      *
      * <pre>{@code
      *     Integer sum = integers.reduce(0, Integer::sum);
      * }</pre>
      *
-     * <p>While this may seem a more roundabout way to perform an aggregation
-     * compared to simply mutating a running total in a loop, reduction
-     * operations parallelize more gracefully, without needing additional
-     * synchronization and with greatly reduced risk of data races.
+     * <p>単純に累計量をループで変更させていく方法と比べて、集計の方法としては回りくどいやりかたのように見えるが、簡約処理は余分な同期処理を必要とせずにうまく並列化でき、データ競合の危険を大幅に減らせる。
      *
-     * @param identity the identity value for the accumulating function
-     * @param accumulator an <a href="package-summary.html#Associativity">associative</a>
-     *                    <a href="package-summary.html#NonInterference">non-interfering,
-     *                    stateless</a> function for combining two values
-     * @return the result of the reduction
+     * @param identity 累積関数の単位元
+     * @param accumulator 2つの値を統合するための、<a href="package-summary.html#Associativity">結合的</a>で<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数
+     * @return 簡約の結果
      */
     T reduce(T identity, BinaryOperator<T> accumulator);
 
     /**
-     * Performs a <a href="package-summary.html#Reduction">reduction</a> on the
-     * elements of this stream, using an
-     * <a href="package-summary.html#Associativity">associative</a> accumulation
-     * function, and returns an {@code Optional} describing the reduced value,
-     * if any. This is equivalent to:
+     * 与えられた<a href="package-summary.html#Associativity">結合的</a>な累積関数を使って、このストリームの要素に<a href="package-summary.html#Reduction">簡約</a>処理を実行して簡約された値があればそれを表す{@code Optional}を返す。これは次と等しい。
      * <pre>{@code
      *     boolean foundAny = false;
      *     T result = null;
@@ -490,18 +346,14 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *     return foundAny ? Optional.of(result) : Optional.empty();
      * }</pre>
      *
-     * but is not constrained to execute sequentially.
+     * ただし逐次的に実行されるとは制約されていない。 
      *
-     * <p>The {@code accumulator} function must be an
-     * <a href="package-summary.html#Associativity">associative</a> function.
+     * <p>{@code accumulator}関数は<a href="package-summary.html#Associativity">結合的</a>関数である必要がある。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @param accumulator an <a href="package-summary.html#Associativity">associative</a>
-     *                    <a href="package-summary.html#NonInterference">non-interfering,
-     *                    stateless</a> function for combining two values
-     * @return the result of the reduction
+     * @param accumulator 2つの値を統合するための、<a href="package-summary.html#Associativity">結合的</a>で<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数
+     * @return 簡約の結果
      * @see #reduce(Object, BinaryOperator)
      * @see #min(java.util.Comparator)
      * @see #max(java.util.Comparator)
@@ -509,9 +361,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Optional<T> reduce(BinaryOperator<T> accumulator);
 
     /**
-     * Performs a <a href="package-summary.html#Reduction">reduction</a> on the
-     * elements of this stream, using the provided identity, accumulation
-     * function, and a combining functions.  This is equivalent to:
+     * 与えられた単位元と累積関数と統合関数を使って、このストリームの要素に<a href="package-summary.html#Reduction">簡約</a>処理を実行して簡約された値を返す。これは次と等しい。
      * <pre>{@code
      *     U result = identity;
      *     for (T element : this stream)
@@ -519,38 +369,23 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *     return result;
      * }</pre>
      *
-     * but is not constrained to execute sequentially.
+     * ただし逐次的に実行されるとは制約されていない。 
      *
-     * <p>The {@code identity} value must be an identity for the combiner
-     * function.  This means that for all {@code u}, {@code combiner(identity, u)}
-     * is equal to {@code u}.  Additionally, the {@code combiner} function
-     * must be compatible with the {@code accumulator} function; for all
-     * {@code u} and {@code t}, the following must hold:
+     * <p>値{@code identity}は統合関数の単位元である必要がある。つまり、任意の{@code u}に対して{@code combiner.apply(identity, u)}は{@code u}と等しい。
+     * 加えて、{@code combiner}関数は{@code accumulator}と整合する必要がある。つまり任意の{@code u}と{@code t}に対して次が成り立つ必要がある。
      * <pre>{@code
      *     combiner.apply(u, accumulator.apply(identity, t)) == accumulator.apply(u, t)
      * }</pre>
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @apiNote Many reductions using this form can be represented more simply
-     * by an explicit combination of {@code map} and {@code reduce} operations.
-     * The {@code accumulator} function acts as a fused mapper and accumulator,
-     * which can sometimes be more efficient than separate mapping and reduction,
-     * such as in the case where knowing the previously reduced value allows you
-     * to avoid some computation.
+     * @apiNote この形式を使った多くの簡約は{@code map}処理と{@code reduce}処理の明示的な組み合わせによって表現できる。{@code accumulator}関数は写像関数と累積関数を融合した関数として振る舞うが、以前に簡約された値がわかれば計算を省ける場合などには、写像と簡約を分けた場合よりも効率的な場合がある。
      *
-     * @param <U> The type of the result
-     * @param identity the identity value for the combiner function
-     * @param accumulator an <a href="package-summary.html#Associativity">associative</a>
-     *                    <a href="package-summary.html#NonInterference">non-interfering,
-     *                    stateless</a> function for incorporating an additional
-     *                    element into a result
-     * @param combiner an <a href="package-summary.html#Associativity">associative</a>
-     *                 <a href="package-summary.html#NonInterference">non-interfering,
-     *                 stateless</a> function for combining two values, which
-     *                 must be compatible with the accumulator function
-     * @return the result of the reduction
+     * @param <U> 結果の型
+     * @param identity 統合関数の単位元
+     * @param accumulator 結果に追加の要素を組み入れるための、<a href="package-summary.html#Associativity">結合的</a>で<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数
+     * @param combiner 2つの値を統合するための、<a href="package-summary.html#Associativity">結合的</a>で<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数。累積関数と整合する必要がある。
+     * @return 簡約の結果
      * @see #reduce(BinaryOperator)
      * @see #reduce(Object, BinaryOperator)
      */
@@ -559,12 +394,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
                  BinaryOperator<U> combiner);
 
     /**
-     * Performs a <a href="package-summary.html#MutableReduction">mutable
-     * reduction</a> operation on the elements of this stream.  A mutable
-     * reduction is one in which the reduced value is a mutable value holder,
-     * such as an {@code ArrayList}, and elements are incorporated by updating
-     * the state of the result, rather than by replacing the result.  This
-     * produces a result equivalent to:
+     * このストリームの要素に<a href="package-summary.html#MutableReduction">可変的簡約</a>を実行する。可変的簡約は、簡約した値が{@code ArrayList}などの可変な値を保持するものであり、結果を置き換えるのではなく結果の状態を変更して各要素を組み入れるような簡約である。これは次のコードと同じ結果を生成する。
      * <pre>{@code
      *     R result = resultFactory.get();
      *     for (T element : this stream)
@@ -572,216 +402,147 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *     return result;
      * }</pre>
      *
-     * <p>Like {@link #reduce(Object, BinaryOperator)}, {@code collect} operations
-     * can be parallelized without requiring additional synchronization.
+     * <p>{@link #reduce(Object, BinaryOperator)}のように、{@code collect}処理は追加の同期処理を必要とせずに並列化できる。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @apiNote There are many existing classes in the JDK whose signatures are
-     * a good match for use as arguments to {@code collect()}.  For example,
-     * the following will accumulate strings into an ArrayList:
+     * @apiNote JDKには{@code collect()}の引数としての利用によく適合したシグネチャを持つ既存のクラスが多くある。例えば、次のコードはArrayListに文字列を累積する。
      * <pre>{@code
      *     List<String> asList = stringStream.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
      * }</pre>
      *
-     * <p>The following will take a stream of strings and concatenates them into a
-     * single string:
+     * <p>次のコードは文字列のストリームを取り、1つの文字列に連結する。
      * <pre>{@code
      *     String concat = stringStream.collect(StringBuilder::new, StringBuilder::append,
      *                                          StringBuilder::append)
      *                                 .toString();
      * }</pre>
      *
-     * @param <R> type of the result
-     * @param resultFactory a function that creates a new result container.
-     *                      For a parallel execution, this function may be
-     *                      called multiple times and must return a fresh value
-     *                      each time.
-     * @param accumulator an <a href="package-summary.html#Associativity">associative</a>
-     *                    <a href="package-summary.html#NonInterference">non-interfering,
-     *                    stateless</a> function for incorporating an additional
-     *                    element into a result
-     * @param combiner an <a href="package-summary.html#Associativity">associative</a>
-     *                 <a href="package-summary.html#NonInterference">non-interfering,
-     *                 stateless</a> function for combining two values, which
-     *                 must be compatible with the accumulator function
-     * @return the result of the reduction
+     * @param <R> 結果の型
+     * @param resultFactory 新しい結果コンテナを作成する関数。並列実行の場合、この関数は複数回呼ばれる場合があり、その度に新しい値を返す必要がある。
+     * @param accumulator 追加の要素を結果に組み入れるための、<a href="package-summary.html#Associativity">結合的</a>で<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数。
+     * @param combiner 2つの値を統合するための、<a href="package-summary.html#Associativity">結合的</a>で<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>関数。累積関数と整合する必要がある。
+     * @return 簡約の結果
      */
     <R> R collect(Supplier<R> resultFactory,
                   BiConsumer<R, ? super T> accumulator,
                   BiConsumer<R, R> combiner);
 
     /**
-     * Performs a <a href="package-summary.html#MutableReduction">mutable
-     * reduction</a> operation on the elements of this stream using a
-     * {@code Collector} object to describe the reduction.  A {@code Collector}
-     * encapsulates the functions used as arguments to
-     * {@link #collect(Supplier, BiConsumer, BiConsumer)}, allowing for reuse of
-     * collection strategies, and composition of collect operations such as
-     * multiple-level grouping or partitioning.
+     * このストリームの要素に対して、簡約を表現する{@code Collector}を使って<a href="package-summary.html#MutableReduction">可変的簡約</a>を実行する。{@code Collector}は{@link #collect(Supplier, BiConsumer, BiConsumer)}の引数として使われる関数をカプセル化して簡約を表現し、収集戦略の再利用を可能にすると共に、複数レベルのグループ化や組分けなどといった風に収集処理の合成を可能にする。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * <p>When executed in parallel, multiple intermediate results may be
-     * instantiated, populated, and merged, so as to maintain isolation of
-     * mutable data structures.  Therefore, even when executed in parallel
-     * with non-thread-safe data structures (such as {@code ArrayList}), no
-     * additional synchronization is needed for a parallel reduction.
+     * <p>並列に実行された場合、可変なデータ構造の隔離を維持するために複数の中間結果がインスタンス化され、満たされ、統合される場合がある。そのため({@code ArrayList}などの)スレッドセーフでないデータ構造に対して並列的に実行されたとしても、並列簡約のために追加の同期処理は必要ない。
      *
      * @apiNote
-     * The following will accumulate strings into an ArrayList:
+     * 以下のコードは文字列をArrayListに累積する。
      * <pre>{@code
      *     List<String> asList = stringStream.collect(Collectors.toList());
      * }</pre>
      *
-     * <p>The following will classify {@code Person} objects by city:
+     * <p>以下のコードは{@code Person}オブジェクトを都市によって分類する。
      * <pre>{@code
      *     Map<String, Collection<Person>> peopleByCity
      *         = personStream.collect(Collectors.groupBy(Person::getCity));
      * }</pre>
      *
-     * <p>The following will classify {@code Person} objects by state and city,
-     * cascading two {@code Collector}s together:
+     * <p>以下のコードは2つの{@code Collector}を共にカスケードして、{@code Person}オブジェクトを州と都市によって分類する。
      * <pre>{@code
      *     Map<String, Map<String, Collection<Person>>> peopleByStateAndCity
      *         = personStream.collect(Collectors.groupBy(Person::getState,
      *                                                   Collectors.groupBy(Person::getCity)));
      * }</pre>
      *
-     * @param <R> the type of the result
-     * @param collector the {@code Collector} describing the reduction
-     * @return the result of the reduction
+     * @param <R> 結果の型
+     * @param collector 簡約を表現する{@code Collector}
+     * @return 簡約の結果
      * @see #collect(Supplier, BiConsumer, BiConsumer)
      * @see Collectors
      */
     <R> R collect(Collector<? super T, R> collector);
 
     /**
-     * Returns the minimum element of this stream according to the provided
-     * {@code Comparator}.  This is a special case of a
-     * <a href="package-summary.html#MutableReduction">reduction</a>.
+     * このストリームの最小要素を{@code Comparator}に従って返す。これは<a href="package-summary.html#MutableReduction">簡約</a>の特別な場合である。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @param comparator a <a href="package-summary.html#NonInterference">non-interfering,
-     *                   stateless</a> {@code Comparator} to use to compare
-     *                   elements of this stream
-     * @return an {@code Optional} describing the minimum element of this stream,
-     * or an empty {@code Optional} if the stream is empty
+     * @param comparator このストリームの要素を比較するための、<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>{@code Comparator}
+     * @return このストリームの最小要素を表す{@code Optional}、またはこのストリームが空ならば空の{@code Optional}
      */
     Optional<T> min(Comparator<? super T> comparator);
 
     /**
-     * Returns the maximum element of this stream according to the provided
-     * {@code Comparator}.  This is a special case of a
-     * <a href="package-summary.html#MutableReduction">reduction</a>.
+     * このストリームの最大要素を{@code Comparator}に従って返す。これは<a href="package-summary.html#MutableReduction">簡約</a>の特別な場合である。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @param comparator a <a href="package-summary.html#NonInterference">non-interfering,
-     *                   stateless</a> {@code Comparator} to use to compare
-     *                   elements of this stream
-     * @return an {@code Optional} describing the maximum element of this stream,
-     * or an empty {@code Optional} if the stream is empty
+     * @param comparator このストリームの要素を比較するための、<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>{@code Comparator}
+     * @return このストリームの最大要素を表す{@code Optional}、またはこのストリームが空ならば空の{@code Optional}
      */
     Optional<T> max(Comparator<? super T> comparator);
 
     /**
-     * Returns the count of elements in this stream.  This is a special case of
-     * a <a href="package-summary.html#MutableReduction">reduction</a> and is
-     * equivalent to:
+     * このストリームの要素数を返す。これは<a href="package-summary.html#MutableReduction">簡約</a>の特殊な場合であり、次のコードと等しい。
      * <pre>{@code
      *     return mapToLong(e -> 1L).sum();
      * }</pre>
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @return the count of elements in this stream
+     * @return このストリームの要素数
      */
     long count();
 
     /**
-     * Returns whether any elements of this stream match the provided
-     * predicate.  May not evaluate the predicate on all elements if not
-     * necessary for determining the result.
+     * このストリームのある要素が与えられた述語に適合するか返す。結果を特定するのに必要でなければ全ての要素に対しては述語を評価しない。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
-     * terminal operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">短絡的な末端処理</a>である。
      *
-     * @param predicate a <a href="package-summary.html#NonInterference">non-interfering,
-     *                  stateless</a> predicate to apply to elements of this
-     *                  stream
-     * @return {@code true} if any elements of the stream match the provided
-     * predicate otherwise {@code false}
+     * @param predicate このストリームの要素に適用する<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>述語
+     * @return このストリームのある要素が与えられた述語に適合するならば{@code true}でそうでなければ{@code false}
      */
     boolean anyMatch(Predicate<? super T> predicate);
 
     /**
-     * Returns whether all elements of this stream match the provided predicate.
-     * May not evaluate the predicate on all elements if not necessary for
-     * determining the result.
+     * このストリームのすべての要素が与えられた述語に適合するか返す。結果を特定するのに必要でなければ全ての要素に対しては述語を評価しない。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
-     * terminal operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">短絡的な末端処理</a>である。
      *
-     * @param predicate a <a href="package-summary.html#NonInterference">non-interfering,
-     *                  stateless</a> predicate to apply to elements of this
-     *                  stream
-     * @return {@code true} if all elements of the stream match the provided
-     * predicate otherwise {@code false}
+     * @param predicate このストリームの要素に適用する<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>述語
+     * @return このストリームのすべての要素が与えられた述語に適合するならば{@code true}でそうでなければ{@code false}
      */
     boolean allMatch(Predicate<? super T> predicate);
 
     /**
-     * Returns whether no elements of this stream match the provided predicate.
-     * May not evaluate the predicate on all elements if not necessary for
-     * determining the result.
+     * このストリームのどの要素も与えられた述語に適合しないか返す。結果を特定するのに必要でなければ全ての要素に対しては述語を評価しない。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
-     * terminal operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">短絡的な末端処理</a>である。
      *
-     * @param predicate a <a href="package-summary.html#NonInterference">non-interfering,
-     *                  stateless</a> predicate to apply to elements of this
-     *                  stream
-     * @return {@code true} if no elements of the stream match the provided
-     * predicate otherwise {@code false}
+     * @param predicate このストリームの要素に適用する<a href="package-summary.html#NonInterference">非干渉的で状態を持たない</a>述語
+     * @return このストリームのどの要素も与えられた述語に適合しないならば{@code true}でそうでなければ{@code false}
      */
     boolean noneMatch(Predicate<? super T> predicate);
 
     /**
-     * Returns an {@link Optional} describing the first element of this stream
-     * (in the encounter order), or an empty {@code Optional} if the stream is
-     * empty.  If the stream has no encounter order, than any element may be
-     * returned.
+     * このストリームの(出現順順序で)最初の要素を表す{@link Optional}、もしくはストリームが空であれば空の{@code Optional}を返す。このストリームが出現順順序を持たなければ任意の要素が返される場合がある。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
-     * terminal operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">短絡的な末端処理</a>である。
      *
-     * @return an {@code Optional} describing the first element of this stream,
-     * or an empty {@code Optional} if the stream is empty
-     * @throws NullPointerException if the element selected is null
+     * @return このストリームの最初の要素を表す{@code Optional}、またはこのストリームが空ならば空の{@code Optional}
+     * @throws NullPointerException 選択された要素がnullの場合
      */
     Optional<T> findFirst();
 
     /**
-     * Returns an {@link Optional} describing some element of the stream, or an
-     * empty {@code Optional} if the stream is empty.
+     * このストリームの任意の要素を表す{@link Optional}、もしくはストリームが空であれば空の{@code Optional}を返す。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">short-circuiting
-     * terminal operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">短絡的な末端処理</a>である。
      *
-     * <p>The behavior of this operation is explicitly nondeterministic; it is
-     * free to select any element in the stream.  This is to allow for maximal
-     * performance in parallel operations; the cost is that multiple invocations
-     * on the same source may not return the same result.  (If the first element
-     * in the encounter order is desired, use {@link #findFirst()} instead.)
+     * <p>この処理の動作は明示的に非決定的であり、どの要素を選んでもよい。これにより並列実行時の性能を最大化できる。その際のコストは同じ情報源に対する複数回の呼び出しが同じ値を返さないことである(もし出現順順序で最初の要素を望むならば、代わりに{@link #findFirst()}を用いよ)。
      *
-     * @return an {@code Optional} describing some element of this stream, or an
-     * empty {@code Optional} if the stream is empty
-     * @throws NullPointerException if the element selected is null
+     * @return このストリームのある要素を表す{@code Optional}、またはこのストリームが空ならば空の{@code Optional}
+     * @throws NullPointerException 選択された要素がnullの場合
      * @see #findFirst()
      */
     Optional<T> findAny();
@@ -789,42 +550,42 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     // Static factories
 
     /**
-     * Returns a builder for a {@code Stream}.
+     * {@code Stream}のビルダを返す。
      *
-     * @param <T> type of elements
-     * @return a stream builder
+     * @param <T> 要素の型
+     * @return ストリームのビルダ
      */
     public static<T> StreamBuilder<T> builder() {
         return new Streams.StreamBuilderImpl<>();
     }
 
     /**
-     * Returns an empty sequential {@code Stream}.
+     * 空の逐次的{@code Stream}を返す。
      *
-     * @param <T> the type of stream elements
-     * @return an empty sequential stream
+     * @param <T> ストリームの要素型
+     * @return 空の逐次的ストリーム
      */
     public static<T> Stream<T> empty() {
         return StreamSupport.stream(Spliterators.<T>emptySpliterator());
     }
 
     /**
-     * Returns a sequential {@code Stream} containing a single element.
+     * 1つの要素を含む逐次的な{@code Stream}を返す。
      *
-     * @param t the single element
-     * @param <T> the type of stream elements
-     * @return a singleton sequential stream
+     * @param t 1つの要素
+     * @param <T> ストリームの要素型
+     * @return 1つの要素を含む逐次的なストリーム
      */
     public static<T> Stream<T> of(T t) {
         return StreamSupport.stream(new Streams.StreamBuilderImpl<>(t));
     }
 
     /**
-     * Returns a sequential stream whose elements are the specified values.
+     * 要素が指定された値であるような逐次的なストリームを返す。
      *
-     * @param <T> the type of stream elements
-     * @param values the elements of the new stream
-     * @return the new stream
+     * @param <T> ストリームの要素型
+     * @param values 新しいストリームの要素
+     * @return 新しいストリーム
      */
     @SafeVarargs
     public static<T> Stream<T> of(T... values) {
@@ -832,21 +593,14 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     }
 
     /**
-     * Returns an infinite sequential {@code Stream} produced by iterative
-     * application of a function {@code f} to an initial element {@code seed},
-     * producing a {@code Stream} consisting of {@code seed}, {@code f(seed)},
-     * {@code f(f(seed))}, etc.
+     * 初期要素{@code seed}に対して関数{@code f}の繰り返しの適用によって生成された無限{@code Stream}を返す。{@code seed}, {@code f(seed)}, {@code f(f(seed))}などからなるストームを生成する。
      *
-     * <p>The first element (position {@code 0}) in the {@code Stream} will be
-     * the provided {@code seed}.  For {@code n > 0}, the element at position
-     * {@code n}, will be the result of applying the function {@code f} to the
-     * element at position {@code n - 1}.
+     * <p>{@code Stream}の最初の要素(位置{@code 0})は{@code seed}によって与えられる。{@code n > 0}に対しては、その位置の要素は{@code f}を位置{@code n - 1}の要素に適用した結果である。
      *
-     * @param <T> the type of stream elements
-     * @param seed the initial element
-     * @param f a function to be applied to to the previous element to produce
-     *          a new element
-     * @return a new sequential {@code Stream}
+     * @param <T> ストリームの要素型
+     * @param seed 初期要素
+     * @param f 新しい要素を生成するために以前の値に適用される関数
+     * @return 新しい逐次的な{@code Stream}
      */
     public static<T> Stream<T> iterate(final T seed, final UnaryOperator<T> f) {
         Objects.requireNonNull(f);
@@ -870,13 +624,11 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     }
 
     /**
-     * Returns a sequential {@code Stream} where each element is
-     * generated by a {@code Supplier}.  This is suitable for generating
-     * constant streams, streams of random elements, etc.
+     * 各要素が{@code Supplier}によって与えられる、逐次的な{@code Stream}を返す。定数のストリームや乱数のストリームなどを生成するのに向いている。
      *
-     * @param <T> the type of stream elements
-     * @param s the {@code Supplier} of generated elements
-     * @return a new sequential {@code Stream}
+     * @param <T> ストリームの要素型
+     * @param s 要素の{@code Supplier}
+     * @return 新しい逐次的な{@code Stream}
      */
     public static<T> Stream<T> generate(Supplier<T> s) {
         Objects.requireNonNull(s);
