@@ -28,81 +28,62 @@ import java.util.Iterator;
 import java.util.Spliterator;
 
 /**
- * Base interface for stream types such as {@link Stream}, {@link IntStream},
- * etc.  Contains methods common to all stream types.  Many of these methods
- * are implemented by {@link AbstractPipeline}, even though
- * {@code AbstractPipeline} does not directly implement {@code BaseStream}.
+ * {@link Stream}や{@link IntStream}などのストリーム型のベースインターフェース。これらのメソッドの多くは{@link AbstractPipeline}で実装されているが、{@code AbstractPipeline}は{@code BaseStream}を直接には実装しない。
  *
- * @param <T> type of stream elements
- * @param <S> type of stream implementing {@code BaseStream}
+ * @param <T> ストリーム要素の型
+ * @param <S> {@code BaseStream}を実装したストリームの型
  * @since 1.8
  */
 interface BaseStream<T, S extends BaseStream<T, S>> {
     /**
-     * Returns an iterator for the elements of this stream.
+     * このストリームの要素のイテレータを返す。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @return the element iterator for this stream
+     * @return このストリームの要素イテレータ
      */
     Iterator<T> iterator();
 
     /**
-     * Returns a spliterator for the elements of this stream.
+     * このストリームの要素のスプリッテレータを返す。
      *
-     * <p>This is a <a href="package-summary.html#StreamOps">terminal
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">末端処理</a>である。
      *
-     * @return the element spliterator for this stream
+     * @return このストリームの要素スプリッテレータ
      */
     Spliterator<T> spliterator();
 
     /**
-     * Returns whether this stream, when executed, would execute in parallel
-     * (assuming no further modification of the stream, such as appending
-     * further intermediate operations or changing its parallelism).  Calling
-     * this method after invoking an intermediate or terminal stream operation
-     * method may yield unpredictable results.
+     * このストリームが実行された際に(このストリームに対してこれ以上中間処理の追加や並列性の変更などといった変更が無いと仮定して)並列に実行されるかどうかを返す。この中間ストリーム処理や末端ストリーム処理を起動した後にこのメソッドを呼ぶと予測できない結果を得る場合がある。
      *
-     * @return {@code true} if this stream would execute in parallel if executed
-     * without further modification otherwise {@code false}
+     * @return もしこれ以上の変更が無い場合にこのストリームが並列に実行されるならば{@code true}、そうでなければ{@code false}
      */
     boolean isParallel();
 
     /**
-     * Returns an equivalent stream that is sequential.  May return
-     * itself, either because the stream was already sequential, or because
-     * the underlying stream state was modified to be sequential.
+     * 逐次的であり同等なストリームを返す。このストリームが既に逐次的であるため、または元のストリームの状態が逐次的に変更されたため、このストリーム自身を返す場合がある。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @return a sequential stream
+     * @return 逐次的なストリーム
      */
     S sequential();
 
     /**
-     * Returns an equivalent stream that is parallel.  May return
-     * itself, either because the stream was already parallel, or because
-     * the underlying stream state was modified to be parallel.
+     * 並列的であり同等なストリームを返す。このストリームが既に並列的であるため、または元のストリームの状態が並列的に変更されたため、このストリーム自身を返す場合がある。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @return a parallel stream
+     * @return 並列ストリーム
      */
     S parallel();
 
     /**
-     * Returns an equivalent stream that is
-     * <a href="package-summary.html#Ordering">unordered</a>.  May return
-     * itself if the stream was already unordered.
+     * <a href="package-summary.html#Ordering">順序を持たず</a>同等なストリームを返す。このストリームが既に順序を持たなければこのストリーム自身を返す場合がある。
      *
-     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
-     * operation</a>.
+     * <p>これは<a href="package-summary.html#StreamOps">中間処理</a>である。
      *
-     * @return an unordered stream
+     * @return 順序を持たないストリーム
      */
     S unordered();
 }
