@@ -1,0 +1,8 @@
+body {
+    font-size: 100%;
+}
+
+pre, code, tt, dt code, table tr td dt code {
+    font-size:1em;
+}
+
