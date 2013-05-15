@@ -58,45 +58,43 @@ import java.util.function.ToLongFunction;
 /**
  * 要素をコレクションに累積する、様々な条件によって要素を要約するなど、様々な便利な簡約処理を実装した{@link Collector}の実装。
  *
- * <p>The following are examples of using the predefined {@code Collector}
- * implementations in {@link Collectors} with the {@code Stream} API to perform
- * mutable reduction tasks:
+ * <p>次のコードは{@link Collectors}に予め用意された{@code Collector}の実装を{@code Stream} APIと共に利用して可変的簡約作業を実行する例である。
  *
  * <pre>{@code
- *     // Accumulate elements into a List
+ *     // 要素をListに累積する
  *     List<Person> list = people.collect(Collectors.toList());
  *
- *     // Accumulate elements into a TreeSet
+ *     // 要素をTreeSetに累積する
  *     List<Person> list = people.collect(Collectors.toCollection(TreeSet::new));
  *
- *     // Convert elements to strings and concatenate them, separated by commas
+ *     // 要素を文字列に変換し、カンマで区切って連結する
  *     String joined = stream.map(Object::toString)
  *                           .collect(Collectors.toStringJoiner(", "))
  *                           .toString();
  *
- *     // Find highest-paid employee
+ *     // 最も給料が高い従業員を求める
  *     Employee highestPaid = employees.stream()
  *                                     .collect(Collectors.maxBy(Comparators.comparing(Employee::getSalary)));
  *
- *     // Group employees by department
+ *     // 部署ごとに従業員をグループ化する
  *     Map<Department, List<Employee>> byDept
  *         = employees.stream()
  *                    .collect(Collectors.groupingBy(Employee::getDepartment));
  *
- *     // Find highest-paid employee by department
+ *     // 部署ごとに最も給料が高い従業員を求める
  *     Map<Department, Employee> highestPaidByDept
  *         = employees.stream()
  *                    .collect(Collectors.groupingBy(Employee::getDepartment,
  *                                                   Collectors.maxBy(Comparators.comparing(Employee::getSalary))));
  *
- *     // Partition students into passing and failing
+ *     // 学生を合格者と不合格者に分ける
  *     Map<Boolean, List<Student>> passingFailing =
  *         students.stream()
  *                 .collect(Collectors.partitioningBy(s -> s.getGrade() >= PASS_THRESHOLD);
  *
  * }</pre>
  *
- * TODO explanation of parallel collection
+ * TODO 並列コレクションの説明
  *
  * @since 1.8
  */
@@ -115,14 +113,10 @@ public final class Collectors {
     private Collectors() { }
 
     /**
-     * Returns a merge function, suitable for use in
-     * {@link Map#merge(Object, Object, BiFunction) Map.merge()} or
-     * {@link #toMap(Function, Function, BinaryOperator) toMap()}, which always
-     * throws {@code IllegalStateException}.  This can be used to enforce the
-     * assumption that the elements being collected are distinct.
+     * {@link Map#merge(Object, Object, BiFunction) Map.merge()}や{@link #toMap(Function, Function, BinaryOperator) toMap()}での利用に適した、常に{@code IllegalStateException}を投げる併合関数を返す。これは収集される要素が全て異なるという想定を遵守させる。
      *
-     * @param <T> the type of input arguments to the merge function
-     * @return a merge function which always throw {@code IllegalStateException}
+     * @param <T> 併合関数の入力引数の型
+     * @return 常に{@code IllegalStateException}を投げる併合関数
      *
      * @see #firstWinsMerger()
      * @see #lastWinsMerger()
@@ -132,13 +126,10 @@ public final class Collectors {
     }
 
     /**
-     * Returns a merge function, suitable for use in
-     * {@link Map#merge(Object, Object, BiFunction) Map.merge()} or
-     * {@link #toMap(Function, Function, BinaryOperator) toMap()},
-     * which implements a "first wins" policy.
+     * {@link Map#merge(Object, Object, BiFunction) Map.merge()}や{@link #toMap(Function, Function, BinaryOperator) toMap()}での利用に適した、「先行者優先」方針を実装する併合関数を返す。
      *
-     * @param <T> the type of input arguments to the merge function
-     * @return a merge function which always returns its first argument
+     * @param <T> 併合関数の入力引数の型
+     * @return 常に第1引数を返す併合関数
      * @see #lastWinsMerger()
      * @see #throwingMerger()
      */
@@ -147,13 +138,10 @@ public final class Collectors {
     }
 
     /**
-     * Returns a merge function, suitable for use in
-     * {@link Map#merge(Object, Object, BiFunction) Map.merge()} or
-     * {@link #toMap(Function, Function, BinaryOperator) toMap()},
-     * which implements a "last wins" policy.
+     * {@link Map#merge(Object, Object, BiFunction) Map.merge()}や{@link #toMap(Function, Function, BinaryOperator) toMap()}での利用に適した、「後行者優先」方針を実装する併合関数を返す。
      *
-     * @param <T> the type of input arguments to the merge function
-     * @return a merge function which always returns its second argument
+     * @param <T> 併合関数の入力引数の型
+     * @return 常に第2引数を返す併合関数
      * @see #firstWinsMerger()
      * @see #throwingMerger()
      */
@@ -211,16 +199,12 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} that accumulates the input elements into a
-     * new {@code Collection}, in encounter order.  The {@code Collection} is
-     * created by the provided factory.
+     * 入力要素を新しい{@code Collection}に出現順に累積する{@code Collector}を返す。{@code Collection}は与えられたファクトリによって作成される。
      *
-     * @param <T> the type of the input elements
-     * @param <C> the type of the resulting {@code Collection}
-     * @param collectionFactory a {@code Supplier} which returns a new, empty
-     * {@code Collection} of the appropriate type
-     * @return a {@code Collector} which collects all the input elements into a
-     * {@code Collection}, in encounter order
+     * @param <T> 入力要素の型
+     * @param <C> 結果の{@code Collection}の型
+     * @param collectionFactory 新しく適切な型で空の{@code Collection}を返す{@code Supplier}
+     * @return 全ての入力要素を出現順に{@code Collection}に収集する{@code Collector}
      */
     public static <T, C extends Collection<T>>
     Collector<T, C> toCollection(Supplier<C> collectionFactory) {
@@ -231,13 +215,10 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} that accumulates the input elements into a
-     * new {@code List}. There are no guarantees on the type, mutability,
-     * serializability, or thread-safety of the {@code List} returned.
+     * 入力要素を新しい{@code List}に出現順に累積する{@code Collector}を返す。返される{@code List}に対する、型・可変性・直列化可能性・スレッド安全性の保証は無い。
      *
-     * @param <T> the type of the input elements
-     * @return a {@code Collector} which collects all the input elements into a
-     * {@code List}, in encounter order
+     * @param <T> 入力要素の型
+     * @return 全ての入力要素を出現順に{@code List}に収集する{@code Collector}
      */
     public static <T>
     Collector<T, List<T>> toList() {
@@ -273,16 +254,10 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} that accumulates the input elements into a
-     * new {@code Set}. There are no guarantees on the type, mutability,
-     * serializability, or thread-safety of the {@code Set} returned.
+     * 入力要素を新しい{@code Set}に出現順に累積する{@code Collector}を返す。返される{@code Set}に対する、型・可変性・直列化可能性・スレッド安全性の保証は無い。
      *
-     * <p>This is an {@link Collector.Characteristics#UNORDERED unordered}
-     * Collector.
-     *
-     * @param <T> the type of the input elements
-     * @return a {@code Collector} which collects all the input elements into a
-     * {@code Set}
+     * @param <T> 入力要素の型
+     * @return 全ての入力要素を出現順に{@code Set}に収集する{@code Collector}
      */
     public static <T>
     Collector<T, Set<T>> toSet() {
@@ -293,11 +268,9 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} that concatenates the input elements into a
-     * new {@link StringBuilder}.
+     * 入力要素を新しい{@link StringBuilder}に連結する{@code Collector}を返す。
      *
-     * @return a {@code Collector} which collects String elements into a
-     * {@code StringBuilder}, in encounter order
+     * @return 入力要素を{@link StringBuilder}に出現順に収集する{@code Collector}
      */
     public static Collector<String, StringBuilder> toStringBuilder() {
         return new CollectorImpl<>(StringBuilder::new,
@@ -307,12 +280,10 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} that concatenates the input elements into a
-     * new {@link StringJoiner}, using the specified delimiter.
+     * 入力要素を指定された区切り文字を使って新しい{@link StringJoiner}に連結する{@code Collector}を返す。
      *
-     * @param delimiter the delimiter to be used between each element
-     * @return A {@code Collector} which collects String elements into a
-     * {@code StringJoiner}, in encounter order
+     * @param delimiter 各要素の間に使われる区切り文字
+     * @return 入力要素を{@link StringJoiner}に出現順に収集する{@code Collector}
      */
     public static Collector<CharSequence, StringJoiner> toStringJoiner(CharSequence delimiter) {
         BinaryOperator<StringJoiner> merger = (sj, other) -> {
@@ -326,15 +297,12 @@ public final class Collectors {
     }
 
     /**
-     * {@code BinaryOperator<Map>} that merges the contents of its right
-     * argument into its left argument, using the provided merge function to
-     * handle duplicate keys.
+     * 与えられた併合関数を重複したキーの処理に使い、右引数の内容を左引数に併合する{@code BinaryOperator<Map>}
      *
-     * @param <K> type of the map keys
-     * @param <V> type of the map values
-     * @param <M> type of the map
-     * @param mergeFunction A merge function suitable for
-     * {@link Map#merge(Object, Object, BiFunction) Map.merge()}
+     * @param <K> マップのキーの型
+     * @param <V> マップの値の型
+     * @param <M> マップの型
+     * @param mergeFunction {@link Map#merge(Object, Object, BiFunction) Map.merge()}に適した併合関数
      * @return a merge function for two maps
      */
     private static <K, V, M extends Map<K,V>>
@@ -347,27 +315,22 @@ public final class Collectors {
     }
 
     /**
-     * Adapts a {@code Collector<U,R>} to a {@code Collector<T,R>} by applying
-     * a mapping function to each input element before accumulation.
+     * 入力要素に対して累積する前に写像関数を適用して{@code Collector<U,R>}を{@code Collector<T,R>}に適合させる。
      *
      * @apiNote
-     * The {@code mapping()} collectors are most useful when used in a
-     * multi-level reduction, downstream of {@code groupingBy} or
-     * {@code partitioningBy}.  For example, given a stream of
-     * {@code Person}, to accumulate the set of last names in each city:
+     * {@code mapping()}コレクタはマルチレベル簡約、つまり{@code groupingBy}や{@code partitioningBy}の下流で利用する際に最も有益である。例えば{@code Person}のストリームが与えられた際に、各市の名字の集合を累積するには次のようにする。
      * <pre>{@code
      *     Map<City, Set<String>> lastNamesByCity
      *         = people.stream().collect(groupingBy(Person::getCity,
      *                                              mapping(Person::getLastName, toSet())));
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <U> type of elements accepted by downstream collector
-     * @param <R> result type of collector
-     * @param mapper a function to be applied to the input elements
-     * @param downstream a collector which will accept mapped values
-     * @return a collector which applies the mapping function to the input
-     * elements and provides the mapped results to the downstream collector
+     * @param <T> 入力要素の型
+     * @param <U> 下流のコレクタによって受理される要素の型
+     * @param <R> コレクタの型
+     * @param mapper 入力関数に適用される関数
+     * @param downstream 写像された値を受理するコレクタ
+     * @return 入力要素に写像関数を適用して写像した結果を下流のコレクタに提供するコレクタ
      */
     public static <T, U, R> Collector<T, R>
     mapping(Function<? super T, ? extends U> mapper, Collector<? super U, R> downstream) {
@@ -378,17 +341,16 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector<T, Long>} that counts the number of input
-     * elements.
+     * 入力要素数を数える{@code Collector<T, Long>}を返す。
      *
      * @implSpec
-     * This produces a result equivalent to:
+     * これは次のコードと等価な結果を生成する。
      * <pre>{@code
      *     reducing(0L, e -> 1L, Long::sum)
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @return a {@code Collector} that counts the input elements
+     * @param <T> 入力要素の型
+     * @return 入力要素数を数える{@code Collector}
      */
     public static <T> Collector<T, Long>
     counting() {
@@ -396,18 +358,18 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector<T, T>} that produces the minimal element
-     * according to a given {@code Comparator}.
+     * 与えられた{@code Comparator}に従って最小の要素を返す{@code Collector<T, T>}を返す。
      *
      * @implSpec
+     * これは次のコードと等価な結果を生成する。
      * This produces a result equivalent to:
      * <pre>{@code
      *     reducing(Comparators.lesserOf(comparator))
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param comparator a {@code Comparator} for comparing elements
-     * @return a {@code Collector} that produces the minimal value
+     * @param <T> 入力要素の型
+     * @param comparator 要素を比較する{@code Comparator}
+     * @return 最小要素を返す{@code Collector}
      */
     public static <T> Collector<T, T>
     minBy(Comparator<? super T> comparator) {
@@ -415,18 +377,18 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector<T, T>} that produces the maximal element
-     * according to a given {@code Comparator}.
+     * 与えられた{@code Comparator}に従って最大の要素を返す{@code Collector<T, T>}を返す。
      *
      * @implSpec
+     * これは次のコードと等価な結果を生成する。
      * This produces a result equivalent to:
      * <pre>{@code
-     *     reducing(Comparators.greaterOf(comparator))
+     *     reducing(Comparators.lesserOf(comparator))
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param comparator a {@code Comparator} for comparing elements
-     * @return a {@code Collector} that produces the maximal value
+     * @param <T> 入力要素の型
+     * @param comparator 要素を比較する{@code Comparator}
+     * @return 最大要素を返す{@code Collector}
      */
     public static <T> Collector<T, T>
     maxBy(Comparator<? super T> comparator) {
@@ -434,18 +396,17 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector<T, Long>} that produces the sum of a
-     * long-valued function applied to the input element.
+     * long値を返す関数を入力要素に適用した結果の和を返す{@code Collector<T, Long>}を返す。
      *
      * @implSpec
-     * This produces a result equivalent to:
+     * これは次のコードと等価な結果を生成する。
      * <pre>{@code
      *     reducing(0L, mapper, Long::sum)
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param mapper a function extracting the property to be summed
-     * @return a {@code Collector} that produces the sum of a derived property
+     * @param <T> 入力要素の型
+     * @param mapper 和を計算するプロパティを抽出する関数
+     * @return 得られたプロパティの和を計算する{@code Collector}
      */
     public static <T> Collector<T, Long>
     sumBy(Function<? super T, Long> mapper) {
@@ -453,20 +414,15 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector<T,T>} which performs a reduction of its
-     * input elements under a specified {@code BinaryOperator}.
+     * 指定された{@code BinaryOperator}に基いて入力要素の簡約を実行する{@code Collector<T,T>}を返す。
      *
      * @apiNote
-     * The {@code reducing()} collectors are most useful when used in a
-     * multi-level reduction, downstream of {@code groupingBy} or
-     * {@code partitioningBy}.  To perform a simple reduction on a stream,
-     * use {@link Stream#reduce(BinaryOperator)} instead.
+     * {@code reducing()}コレクタはマルチレベル簡約、つまり{@code groupingBy}や{@code partitioningBy}の下流で利用する際に最も有益である。ストリームに対して単純な簡約を実行する場合は代わりに{@link Stream#reduce(BinaryOperator)}を使用せよ。
      *
-     * @param <T> element type for the input and output of the reduction
-     * @param identity the identity value for the reduction (also, the value
-     *                 that is returned when there are no input elements)
-     * @param op a {@code BinaryOperator<T>} used to reduce the input elements
-     * @return a {@code Collector} which implements the reduction operation
+     * @param <T> 簡約の入力と出力の要素型
+     * @param identity 簡約の単位元(また、入力要素が無い場合に返される値)
+     * @param op 入力要素を簡約するために使う{@code BinaryOperator<T>}
+     * @return 簡約操作を実装する{@code Collector}
      *
      * @see #reducing(BinaryOperator)
      * @see #reducing(Object, Function, BinaryOperator)
@@ -477,17 +433,12 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector<T,T>} which performs a reduction of its
-     * input elements under a specified {@code BinaryOperator}.
+     * 指定された{@code BinaryOperator}に基いて入力要素の簡約を実行する{@code Collector<T,T>}を返す。
      *
      * @apiNote
-     * The {@code reducing()} collectors are most useful when used in a
-     * multi-level reduction, downstream of {@code groupingBy} or
-     * {@code partitioningBy}.  To perform a simple reduction on a stream,
-     * use {@link Stream#reduce(BinaryOperator)} instead.
+     * {@code reducing()}コレクタはマルチレベル簡約、つまり{@code groupingBy}や{@code partitioningBy}の下流で利用する際に最も有益である。ストリームに対して単純な簡約を実行する場合は代わりに{@link Stream#reduce(BinaryOperator)}を使用せよ。
      *
-     * <p>For example, given a stream of {@code Person}, to calculate tallest
-     * person in each city:
+     * <p>例えば、{@code Person}のストリームが与えられた場合、各市の最も背が高い人を計算するには次のようにする。
      * <pre>{@code
      *     Comparator<Person> byHeight = Comparators.comparing(Person::getHeight);
      *     BinaryOperator<Person> tallerOf = Comparators.greaterOf(byHeight);
@@ -496,14 +447,14 @@ public final class Collectors {
      * }</pre>
      *
      * @implSpec
-     * The default implementation is equivalent to:
+     * デフォルトの実装は次と等価である。
      * <pre>{@code
      *     reducing(null, op);
      * }</pre>
      *
-     * @param <T> element type for the input and output of the reduction
-     * @param op a {@code BinaryOperator<T>} used to reduce the input elements
-     * @return a {@code Collector} which implements the reduction operation
+     * @param <T> 簡約の入力と出力の要素型
+     * @param op 入力要素を簡約するために使う{@code BinaryOperator<T>}
+     * @return 簡約操作を実装する{@code Collector}
      *
      * @see #reducing(Object, BinaryOperator)
      * @see #reducing(Object, Function, BinaryOperator)
@@ -514,20 +465,12 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector<T,U>} which performs a reduction of its
-     * input elements under a specified mapping function and
-     * {@code BinaryOperator}. This is a generalization of
-     * {@link #reducing(Object, BinaryOperator)} which allows a transformation
-     * of the elements before reduction.
+     * 指定された写像関数と{@code BinaryOperator}に基いて入力要素の簡約を実行する{@code Collector<T,U>}を返す。これは{@link #reducing(Object, BinaryOperator)}の一般化であり、簡約の前に要素の変換を許す。
      *
      * @apiNote
-     * The {@code reducing()} collectors are most useful when used in a
-     * multi-level reduction, downstream of {@code groupingBy} or
-     * {@code partitioningBy}.  To perform a simple reduction on a stream,
-     * use {@link Stream#reduce(BinaryOperator)} instead.
+     * {@code reducing()}コレクタはマルチレベル簡約、つまり{@code groupingBy}や{@code partitioningBy}の下流で利用する際に最も有益である。ストリームに対して単純な簡約を実行する場合は代わりに{@link Stream#reduce(BinaryOperator)}を使用せよ。
      *
-     * <p>For example, given a stream of {@code Person}, to calculate the longest
-     * last name of residents in each city:
+     * <p>例えば、{@code Person}のストリームが与えられた場合、各市の最も名字が長い住民を計算するには次のようにする。
      * <pre>{@code
      *     Comparator<String> byLength = Comparators.comparing(String::length);
      *     BinaryOperator<String> longerOf = Comparators.greaterOf(byLength);
@@ -536,12 +479,11 @@ public final class Collectors {
      *                                              reducing(Person::getLastName, longerOf)));
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <U> the type of the mapped values
-     * @param identity the identity value for the reduction (also, the value
-     *                 that is returned when there are no input elements)
-     * @param mapper a mapping function to apply to each input value
-     * @param op a {@code BinaryOperator<U>} used to reduce the mapped values
+     * @param <T> 入力要素の型
+     * @param <U> 写像された値の型
+     * @param identity 簡約の単位元(また、入力要素が無い場合に返される値)
+     * @param mapper 入力関数に適用される関数
+     * @param op 写像された値を簡約するために使う{@code BinaryOperator<U>}
      * @return a {@code Collector} implementing the map-reduce operation
      *
      * @see #reducing(Object, BinaryOperator)
@@ -557,29 +499,21 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} implementing a "group by" operation on
-     * input elements of type {@code T}, grouping elements according to a
-     * classification function.
+     * 入力要素型{@code T}に対する"group by"処理を実装し、要素を分類関数に従ってグループ化する{@code Collector}を返す。
      *
-     * <p>The classification function maps elements to some key type {@code K}.
-     * The collector produces a {@code Map<K, List<T>>} whose keys are the
-     * values resulting from applying the classification function to the input
-     * elements, and whose corresponding values are {@code List}s containing the
-     * input elements which map to the associated key under the classification
-     * function.
+     * <p>分類関数は要素を{@code K}型の何らかのキーに写像する。このコレクタは、入力要素に分類関数を適用した結果の値をキーとして持ち、そのキーに分類関数が写像するような入力要素を含む{@code List}を対応する値として持つような{@code Map<K, List<T>>}を生成する。
      *
-     * <p>There are no guarantees on the type, mutability, serializability, or
-     * thread-safety of the {@code Map} or {@code List} objects returned.
+     * <p>返される{@code Map}や{@code List}オブジェクトに対する、型・可変性・直列化可能性・スレッド安全性の保証は無い。
      * @implSpec
-     * This produces a result similar to:
+     * これは次のコードに類似した結果を生成する。
      * <pre>{@code
      *     groupingBy(classifier, toList());
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <K> the type of the keys
-     * @param classifier the classifier function mapping input elements to keys
-     * @return a {@code Collector} implementing the group-by operation
+     * @param <T> 入力要素の型
+     * @param <K> キーの型
+     * @param classifier 入力要素をキーに写像する分類関数
+     * @return group-by処理を実装した{@code Collector}
      *
      * @see #groupingBy(Function, Collector)
      * @see #groupingBy(Function, Supplier, Collector)
@@ -591,33 +525,25 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} implementing a cascaded "group by" operation
-     * on input elements of type {@code T}, grouping elements according to a
-     * classification function, and then performing a reduction operation on
-     * the values associated with a given key using the specified downstream
-     * {@code Collector}.
+     * 入力要素型{@code T}に対するカスケードされた"group by"処理を実装し、要素を分類関数に従ってグループ化した後に下流の{@code Collector}を使って与えられたキーに対応する値の簡約処理を実行する{@code Collector}を返す。
      *
-     * <p>The classification function maps elements to some key type {@code K}.
-     * The downstream collector operates on elements of type {@code T} and
-     * produces a result of type {@code D}. The resulting collector produces a
-     * {@code Map<K, D>}.
+     * <p>分類関数は要素を{@code K}型の何らかのキーに写像する。下流のコレクタは{@code T}型の要素に対して動作し、{@code D}型の結果を生成する。結果であるコレクタは{@code Map<K, D>}を生成する。
      *
-     * <p>There are no guarantees on the type, mutability,
-     * serializability, or thread-safety of the {@code Map} returned.
+     * <p>返される{@code Map}に対する、型・可変性・直列化可能性・スレッド安全性の保証は無い。
      *
-     * <p>For example, to compute the set of last names of people in each city:
+     * <p>例えば、各市の人の名字の集合を計算するには次のようにする。
      * <pre>{@code
      *     Map<City, Set<String>> namesByCity
      *         = people.stream().collect(groupingBy(Person::getCity,
      *                                              mapping(Person::getLastName, toSet())));
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <K> the type of the keys
-     * @param <D> the result type of the downstream reduction
-     * @param classifier a classifier function mapping input elements to keys
-     * @param downstream a {@code Collector} implementing the downstream reduction
-     * @return a {@code Collector} implementing the cascaded group-by operation
+     * @param <T> 入力要素の型
+     * @param <K> キーの型
+     * @param <D> 下流の簡約の結果型
+     * @param classifier 入力要素をキーに写像する分類関数
+     * @param downstream 下流の簡約を実装した{@code Collector}
+     * @return カスケードされたgroup-by処理を実装した{@code Collector}
      * @see #groupingBy(Function)
      *
      * @see #groupingBy(Function, Supplier, Collector)
@@ -630,35 +556,24 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} implementing a cascaded "group by" operation
-     * on input elements of type {@code T}, grouping elements according to a
-     * classification function, and then performing a reduction operation on
-     * the values associated with a given key using the specified downstream
-     * {@code Collector}.  The {@code Map} produced by the Collector is created
-     * with the supplied factory function.
+     * 入力要素型{@code T}に対するカスケードされた"group by"処理を実装し、要素を分類関数に従ってグループ化した後に下流の{@code Collector}を使って与えられたキーに対応する値の簡約処理を実行する{@code Collector}を返す。このコレクタによって生成される{@code Map}は与えられたファクトリ関数によって生成される。
      *
-     * <p>The classification function maps elements to some key type {@code K}.
-     * The downstream collector operates on elements of type {@code T} and
-     * produces a result of type {@code D}. The resulting collector produces a
-     * {@code Map<K, D>}.
-     *
-     * <p>For example, to compute the set of last names of people in each city,
-     * where the city names are sorted:
+     * <p>分類関数は要素を{@code K}型の何らかのキーに写像する。下流のコレクタは{@code T}型の要素に対して動作し、{@code D}型の結果を生成する。結果であるコレクタは{@code Map<K, D>}を生成する。
+     * <p>例えば、各市の人の名字の集合を計算するには次のようにする。ただし結果のマップにおいて市の名前は整列されているとする。
      * <pre>{@code
      *     Map<City, Set<String>> namesByCity
      *         = people.stream().collect(groupingBy(Person::getCity, TreeMap::new,
      *                                              mapping(Person::getLastName, toSet())));
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <K> the type of the keys
-     * @param <D> the result type of the downstream reduction
-     * @param <M> the type of the resulting {@code Map}
-     * @param classifier a classifier function mapping input elements to keys
-     * @param downstream a {@code Collector} implementing the downstream reduction
-     * @param mapFactory a function which, when called, produces a new empty
-     *                   {@code Map} of the desired type
-     * @return a {@code Collector} implementing the cascaded group-by operation
+     * @param <T> 入力要素の型
+     * @param <K> キーの型
+     * @param <D> 下流の簡約の結果型
+     * @param <M> 結果の{@code Map}の型
+     * @param classifier 入力要素をキーに写像する分類関数
+     * @param downstream 下流の簡約を実装した{@code Collector}
+     * @param mapFactory 呼ばれると要求された型の空の{@code Map}を生成する関数
+     * @return カスケードされたgroup-by処理を実装した{@code Collector}
      *
      * @see #groupingBy(Function, Collector)
      * @see #groupingBy(Function)
@@ -682,33 +597,23 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} implementing a concurrent "group by"
-     * operation on input elements of type {@code T}, grouping elements
-     * according to a classification function.
+     * 入力要素型{@code T}に対する並行"group by"処理を実装し、要素を分類関数に従ってグループ化する{@code Collector}を返す。
      *
-     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
-     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     * <p>これは{@link Collector.Characteristics#CONCURRENT 並行的}であり、{@link Collector.Characteristics#UNORDERED 順序付けられていない}Collectorである。
      *
-     * <p>The classification function maps elements to some key type {@code K}.
-     * The collector produces a {@code ConcurrentMap<K, List<T>>} whose keys are the
-     * values resulting from applying the classification function to the input
-     * elements, and whose corresponding values are {@code List}s containing the
-     * input elements which map to the associated key under the classification
-     * function.
+     * <p>分類関数は要素を{@code K}型の何らかのキーに写像する。このコレクタは、入力要素に分類関数を適用した結果の値をキーとして持ち、そのキーに分類関数が写像するような入力要素を含む{@code List}を対応する値として持つような{@code ConcurrentMap<K, List<T>>}を生成する。
      *
-     * <p>There are no guarantees on the type, mutability, or serializability
-     * of the {@code Map} or {@code List} objects returned, or of the
-     * thread-safety of the {@code List} objects returned.
+     * <p>返される{@code Map}や{@code List}オブジェクトに対する、型・可変性・直列化可能性、および返される{@code List}オブジェクトに対するスレッド安全性の保証は無い。
      * @implSpec
-     * This produces a result similar to:
+     * これは次のコードに類似した結果を生成する。
      * <pre>{@code
      *     groupingByConcurrent(classifier, toList());
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <K> the type of the keys
-     * @param classifier a classifier function mapping input elements to keys
-     * @return a {@code Collector} implementing the group-by operation
+     * @param <T> 入力要素の型
+     * @param <K> キーの型
+     * @param classifier 入力要素をキーに写像する分類関数
+     * @return group-by処理を実装した{@code Collector}
      *
      * @see #groupingBy(Function)
      * @see #groupingByConcurrent(Function, Collector)
@@ -720,34 +625,25 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} implementing a concurrent cascaded "group by"
-     * operation on input elements of type {@code T}, grouping elements
-     * according to a classification function, and then performing a reduction
-     * operation on the values associated with a given key using the specified
-     * downstream {@code Collector}.
+     * 入力要素型{@code T}に対するカスケードされた並行"group by"処理を実装し、要素を分類関数に従ってグループ化した後に下流の{@code Collector}を使って与えられたキーに対応する値の簡約処理を実行する{@code Collector}を返す。
      *
-     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
-     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     * <p>これは{@link Collector.Characteristics#CONCURRENT 並行的}であり、{@link Collector.Characteristics#UNORDERED 順序付けられていない}Collectorである。
      *
-     * <p>The classification function maps elements to some key type {@code K}.
-     * The downstream collector operates on elements of type {@code T} and
-     * produces a result of type {@code D}. The resulting collector produces a
-     * {@code Map<K, D>}.
+     * <p>分類関数は要素を{@code K}型の何らかのキーに写像する。下流のコレクタは{@code T}型の要素に対して動作し、{@code D}型の結果を生成する。結果であるコレクタは{@code Map<K, D>}を生成する。
      *
-     * <p>For example, to compute the set of last names of people in each city,
-     * where the city names are sorted:
+     * <p>例えば、各市の人の名字の集合を計算するには次のようにする。ただし結果のマップにおいて市の名前は整列されているとする。
      * <pre>{@code
      *     ConcurrentMap<City, Set<String>> namesByCity
      *         = people.stream().collect(groupingByConcurrent(Person::getCity, TreeMap::new,
      *                                                        mapping(Person::getLastName, toSet())));
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <K> the type of the keys
-     * @param <D> the result type of the downstream reduction
-     * @param classifier a classifier function mapping input elements to keys
-     * @param downstream a {@code Collector} implementing the downstream reduction
-     * @return a {@code Collector} implementing the cascaded group-by operation
+     * @param <T> 入力要素の型
+     * @param <K> キーの型
+     * @param <D> 下流の簡約の結果型
+     * @param classifier 入力要素をキーに写像する分類関数
+     * @param downstream 下流の簡約を実装した{@code Collector}
+     * @return カスケードされたgroup-by処理を実装した{@code Collector}
      *
      * @see #groupingBy(Function, Collector)
      * @see #groupingByConcurrent(Function)
@@ -760,39 +656,27 @@ public final class Collectors {
     }
 
     /**
-     * Returns a concurrent {@code Collector} implementing a cascaded "group by"
-     * operation on input elements of type {@code T}, grouping elements
-     * according to a classification function, and then performing a reduction
-     * operation on the values associated with a given key using the specified
-     * downstream {@code Collector}.  The {@code ConcurrentMap} produced by the
-     * Collector is created with the supplied factory function.
+     * 入力要素型{@code T}に対する並行"group by"処理を実装し、要素を分類関数に従ってグループ化した後に下流の{@code Collector}を使って与えられたキーに対応する値の簡約処理を実行する並行{@code Collector}を返す。このコレクタによって生成される{@code ConcurrentMap}は与えられたファクトリ関数によって生成される。
      *
-     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
-     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     * <p>これは{@link Collector.Characteristics#CONCURRENT 並行的}であり、{@link Collector.Characteristics#UNORDERED 順序付けられていない}Collectorである。
      *
-     * <p>The classification function maps elements to some key type {@code K}.
-     * The downstream collector operates on elements of type {@code T} and
-     * produces a result of type {@code D}. The resulting collector produces a
-     * {@code Map<K, D>}.
+     * <p>分類関数は要素を{@code K}型の何らかのキーに写像する。下流のコレクタは{@code T}型の要素に対して動作し、{@code D}型の結果を生成する。結果であるコレクタは{@code Map<K, D>}を生成する。
      *
-     * <p>For example, to compute the set of last names of people in each city,
-     * where the city names are sorted:
+     * <p>例えば、各市の人の名字の集合を計算するには次のようにする。ただし結果のマップにおいて市の名前は整列されているとする。
      * <pre>{@code
      *     ConcurrentMap<City, Set<String>> namesByCity
      *         = people.stream().collect(groupingBy(Person::getCity, ConcurrentSkipListMap::new,
      *                                              mapping(Person::getLastName, toSet())));
      * }</pre>
      *
-     *
-     * @param <T> the type of the input elements
-     * @param <K> the type of the keys
-     * @param <D> the result type of the downstream reduction
+     * @param <T> 入力要素の型
+     * @param <K> キーの型
+     * @param <D> 下流の簡約の結果型
      * @param <M> the type of the resulting {@code ConcurrentMap}
-     * @param classifier a classifier function mapping input elements to keys
-     * @param downstream a {@code Collector} implementing the downstream reduction
-     * @param mapFactory a function which, when called, produces a new empty
-     *                   {@code ConcurrentMap} of the desired type
-     * @return a {@code Collector} implementing the cascaded group-by operation
+     * @param classifier 入力要素をキーに写像する分類関数
+     * @param downstream 下流の簡約を実装した{@code Collector}
+     * @param mapFactory 呼ばれると要求された型の空の{@code ConcurrentMap}を生成する関数
+     * @return カスケードされたgroup-by処理を実装した{@code Collector}
      *
      * @see #groupingByConcurrent(Function)
      * @see #groupingByConcurrent(Function, Collector)
@@ -847,16 +731,13 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} which partitions the input elements according
-     * to a {@code Predicate}, and organizes them into a
-     * {@code Map<Boolean, List<T>>}.
+     * 入力要素を{@code Predicate}に従って分割して{@code Map<Boolean, List<T>>}に編成する{@code Collector}を返す。
      *
-     * There are no guarantees on the type, mutability,
-     * serializability, or thread-safety of the {@code Map} returned.
+     * 返される{@code Map}に対する、型・可変性・直列化可能性・スレッド安全性の保証は無い。
      *
-     * @param <T> the type of the input elements
-     * @param predicate a predicate used for classifying input elements
-     * @return a {@code Collector} implementing the partitioning operation
+     * @param <T> 入力要素の型
+     * @param predicate 入力要素を分類する述語
+     * @return 分割処理を実装した{@code Collector}
      *
      * @see #partitioningBy(Predicate, Collector)
      */
@@ -866,22 +747,15 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} which partitions the input elements according
-     * to a {@code Predicate}, reduces the values in each partition according to
-     * another {@code Collector}, and organizes them into a
-     * {@code Map<Boolean, D>} whose values are the result of the downstream
-     * reduction.
+     * 入力要素を{@code Predicate}に従って分割した後に他の{@code Collector}を使って各パーティションの値を簡約して{@code Map<Boolean, D>}に編成する{@code Collector}を返す。
      *
-     * <p>There are no guarantees on the type, mutability,
-     * serializability, or thread-safety of the {@code Map} returned.
+     * <p>返される{@code Map}に対する、型・可変性・直列化可能性・スレッド安全性の保証は無い。
      *
-     * @param <T> the type of the input elements
-     * @param <D> the result type of the downstream reduction
-     * @param predicate a predicate used for classifying input elements
-     * @param downstream a {@code Collector} implementing the downstream
-     *                   reduction
-     * @return a {@code Collector} implementing the cascaded partitioning
-     *         operation
+     * @param <T> 入力要素の型
+     * @param <D> 下流の簡約の結果型
+     * @param predicate 入力要素を分類する述語
+     * @param downstream 下流の簡約を実装した{@code Collector}
+     * @return カスケードされた分割処理をじっそうした{@code Collector}
      *
      * @see #partitioningBy(Predicate)
      */
@@ -928,41 +802,28 @@ public final class Collectors {
     }
 
     /**
-     * Accumulate elements into a {@code Map} whose keys and values are the
-     * result of applying mapping functions to the input elements.
-     * If the mapped keys contains duplicates (according to
-     * {@link Object#equals(Object)}), an {@code IllegalStateException} is
-     * thrown when the collection operation is performed.  If the mapped keys
-     * may have duplicates, use {@link #toMap(Function, Function, BinaryOperator)}
-     * instead.
+     * 写像関数の結果をキーと値として、要素を{@code Map}に累積する。もし写像されたキーが({@link Object#equals(Object)}に従って)重複を含む場合は、収集処理が実行される際に{@code IllegalStateException}が発生する。写像されたキーが重複を含む場合は代わりに{@link #toMap(Function, Function, BinaryOperator)}を使用せよ。
      *
      * @apiNote
-     * It is common for either the key or the value to be the input elements.
-     * In this case, the utility method
-     * {@link java.util.function.Function#identity()} may be helpful.
-     * For example, the following produces a {@code Map} mapping
-     * students to their grade point average:
+     * キーまたは値が入力要素そのものである場合は多い。その場合、ユーティリティメソッド{@link java.util.function.Function#identity()}が役に立つだろう。例えば、次のコードは生徒を平均点に写像する{@code Map}を生成する。
      * <pre>{@code
      *     Map<Student, Double> studentToGPA
      *         students.stream().collect(toMap(Functions.identity(),
      *                                         student -> computeGPA(student)));
      * }</pre>
-     * And the following produces a {@code Map} mapping a unique identifier to
-     * students:
+     * そして次のコードは一意的な識別子から生徒に写像する{@code Map}を生成する。
      * <pre>{@code
      *     Map<String, Student> studentIdToStudent
      *         students.stream().collect(toMap(Student::getId,
      *                                         Functions.identity());
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <K> the output type of the key mapping function
-     * @param <U> the output type of the value mapping function
-     * @param keyMapper a mapping function to produce keys
-     * @param valueMapper a mapping function to produce values
-     * @return a {@code Collector} which collects elements into a {@code Map}
-     * whose keys and values are the result of applying mapping functions to
-     * the input elements
+     * @param <T> 入力要素の型
+     * @param <K> キーに写像する関数の出力型
+     * @param <U> 値に写像する関数の出力型
+     * @param keyMapper キーを生成する写像関数
+     * @param valueMapper 値を生成する写像関数
+     * @return 写像関数の結果をキーと値として、入力要素を{@code Map}に累積する{@code Collector}
      *
      * @see #toMap(Function, Function, BinaryOperator)
      * @see #toMap(Function, Function, BinaryOperator, Supplier)
@@ -975,22 +836,10 @@ public final class Collectors {
     }
 
     /**
-     * Accumulate elements into a {@code Map} whose keys and values are the
-     * result of applying mapping functions to the input elements. If the mapped
-     * keys contains duplicates (according to {@link Object#equals(Object)}),
-     * the value mapping function is applied to each equal element, and the
-     * results are merged using the provided merging function.
+     * 写像関数の結果をキーと値として、要素を{@code Map}に累積する。もし写像されたキーが({@link Object#equals(Object)}に従って)重複を含む場合は、等価な各要素に対して値に写像する関数が適用され、用意された併合関数により結果が併合される。
      *
      * @apiNote
-     * There are multiple ways to deal with collisions between multiple elements
-     * mapping to the same key.  There are some predefined merging functions,
-     * such as {@link #throwingMerger()}, {@link #firstWinsMerger()}, and
-     * {@link #lastWinsMerger()}, that implement common policies, or you can
-     * implement custom policies easily.  For example, if you have a stream
-     * of {@code Person}, and you want to produce a "phone book" mapping name to
-     * address, but it is possible that two persons have the same name, you can
-     * do as follows to gracefully deals with these collisions, and produce a
-     * {@code Map} mapping names to a concatenated list of addresses:
+     * 同じキーに写像される要素間の衝突を処理する方法は複数ある。{@link #throwingMerger()}や{@link #firstWinsMerger()}や{@link #lastWinsMerger()}といった、よくある方針を実装した併合関数も予め用意されているし、カスタム方針の実装も簡単にできる。例えば、{@code Person}があり、名前から住所を結び付ける「電話帳」を作りたいとする。しかし別の人が同じ名前を持つこともあるため、次のように、上品にそういった衝突を処理し、名前から住所を連結したリストを結び付けた{@code Map}を生成できる。
      * <pre>{@code
      *     Map<String, String> phoneBook
      *         people.stream().collect(toMap(Person::getName,
@@ -998,19 +847,13 @@ public final class Collectors {
      *                                       (s, a) -> s + ", " + a));
      * }</pre>
      *
-     * @param <T> the type of the input elements
-     * @param <K> the output type of the key mapping function
-     * @param <U> the output type of the value mapping function
-     * @param keyMapper a mapping function to produce keys
-     * @param valueMapper a mapping function to produce values
-     * @param mergeFunction a merge function, used to resolve collisions between
-     *                      values associated with the same key, as supplied
-     *                      to {@link Map#merge(Object, Object, BiFunction)}
-     * @return a {@code Collector} which collects elements into a {@code Map}
-     * whose keys are the result of applying a key mapping function to the input
-     * elements, and whose values are the result of applying a value mapping
-     * function to all input elements equal to the key and combining them
-     * using the merge function
+     * @param <T> 入力要素の型
+     * @param <K> キーに写像する関数の出力型
+     * @param <U> 値に写像する関数の出力型
+     * @param keyMapper キーを生成する写像関数
+     * @param valueMapper 値を生成する写像関数
+     * @param mergeFunction {@link Map#merge(Object, Object, BiFunction)}に与えられる関数と同様に、同じキーに割り当てられた値の衝突を解決する併合関数。
+     * @return キーに写像する関数の結果をキーとし、値に写像する関数の値の結果を、キーが同じになる値全てを併合関数で併合した結果を値として、要素を{@code Map}に集める{@code Collector}
      *
      * @see #toMap(Function, Function)
      * @see #toMap(Function, Function, BinaryOperator, Supplier)
@@ -1024,29 +867,17 @@ public final class Collectors {
     }
 
     /**
-     * Accumulate elements into a {@code Map} whose keys and values are the
-     * result of applying mapping functions to the input elements. If the mapped
-     * keys contains duplicates (according to {@link Object#equals(Object)}),
-     * the value mapping function is applied to each equal element, and the
-     * results are merged using the provided merging function.  The {@code Map}
-     * is created by a provided supplier function.
+     * 写像関数の結果をキーと値として、要素を{@code Map}に累積する。もし写像されたキーが({@link Object#equals(Object)}に従って)重複を含む場合は、等価な各要素に対して値に写像する関数が適用され、用意された併合関数により結果が併合される。{@code Map}は与えらえたファクトリ関数によって作成される。
      *
-     * @param <T> the type of the input elements
-     * @param <K> the output type of the key mapping function
-     * @param <U> the output type of the value mapping function
-     * @param <M> the type of the resulting {@code Map}
-     * @param keyMapper a mapping function to produce keys
-     * @param valueMapper a mapping function to produce values
-     * @param mergeFunction a merge function, used to resolve collisions between
-     *                      values associated with the same key, as supplied
-     *                      to {@link Map#merge(Object, Object, BiFunction)}
-     * @param mapSupplier a function which returns a new, empty {@code Map} into
-     *                    which the results will be inserted
-     * @return a {@code Collector} which collects elements into a {@code Map}
-     * whose keys are the result of applying a key mapping function to the input
-     * elements, and whose values are the result of applying a value mapping
-     * function to all input elements equal to the key and combining them
-     * using the merge function
+     * @param <T> 入力要素の型
+     * @param <K> キーに写像する関数の出力型
+     * @param <U> 値に写像する関数の出力型
+     * @param <M> 結果の{@code Map}の型
+     * @param keyMapper キーを生成する写像関数
+     * @param valueMapper 値を生成する写像関数
+     * @param mergeFunction {@link Map#merge(Object, Object, BiFunction)}に与えられる関数と同様に、同じキーに割り当てられた値の衝突を解決する併合関数。
+     * @param mapSupplier 結果を挿入するための、新しい空の{@code Map}を返す関数
+     * @return キーに写像する関数の結果をキーとし、値に写像する関数の値の結果を、キーが同じになる値全てを併合関数で併合した結果を値として、要素を{@code Map}に集める{@code Collector}
      *
      * @see #toMap(Function, Function)
      * @see #toMap(Function, Function, BinaryOperator)
@@ -1066,45 +897,30 @@ public final class Collectors {
     }
 
     /**
-     * Accumulate elements into a {@code ConcurrentMap} whose keys and values
-     * are the result of applying mapping functions to the input elements.
-     * If the mapped keys contains duplicates (according to
-     * {@link Object#equals(Object)}), an {@code IllegalStateException} is
-     * thrown when the collection operation is performed.  If the mapped keys
-     * may have duplicates, use
-     * {@link #toConcurrentMap(Function, Function, BinaryOperator)} instead.
+     * 写像関数の結果をキーと値として、要素を{@code ConcurrentMap}に累積する。もし写像されたキーが({@link Object#equals(Object)}に従って)重複を含む場合は、収集処理が実行される際に{@code IllegalStateException}が発生する。写像されたキーが重複を含む場合は代わりに{@link #toConcurrentMap(Function, Function, BinaryOperator)}を使用せよ。
      *
      * @apiNote
-     * It is common for either the key or the value to be the input elements.
-     * In this case, the utility method
-     * {@link java.util.function.Function#identity()} may be helpful.
-     * For example, the following produces a {@code Map} mapping
-     * students to their grade point average:
+     * キーまたは値が入力要素そのものである場合は多い。その場合、ユーティリティメソッド{@link java.util.function.Function#identity()}が役に立つだろう。例えば、次のコードは生徒を平均点に写像する{@code Map}を生成する。
      * <pre>{@code
      *     Map<Student, Double> studentToGPA
      *         students.stream().collect(toMap(Functions.identity(),
      *                                         student -> computeGPA(student)));
      * }</pre>
-     * And the following produces a {@code Map} mapping a unique identifier to
-     * students:
+     * そして次のコードは一意的な識別子から生徒に写像する{@code Map}を生成する。
      * <pre>{@code
      *     Map<String, Student> studentIdToStudent
      *         students.stream().collect(toConcurrentMap(Student::getId,
      *                                                   Functions.identity());
      * }</pre>
      *
-     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
-     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     * <p>これは{@link Collector.Characteristics#CONCURRENT 並行的}で{@link Collector.Characteristics#UNORDERED 順序付けられていない}Collectorである。
      *
-     * @param <T> the type of the input elements
-     * @param <K> the output type of the key mapping function
-     * @param <U> the output type of the value mapping function
-     * @param keyMapper the mapping function to produce keys
-     * @param valueMapper the mapping function to produce values
-     * @return a concurrent {@code Collector} which collects elements into a
-     * {@code ConcurrentMap} whose keys are the result of applying a key mapping
-     * function to the input elements, and whose values are the result of
-     * applying a value mapping function to the input elements
+     * @param <T> 入力要素の型
+     * @param <K> キーに写像する関数の出力型
+     * @param <U> 値に写像する関数の出力型
+     * @param keyMapper キーを生成する写像関数
+     * @param valueMapper 値を生成する写像関数
+     * @return キーに写像する関数の結果をキーとし、値に写像する関数の値の結果を値として、入力要素を{@code ConcurrentMap}に集める並行{@code Collector}
      *
      * @see #toMap(Function, Function)
      * @see #toConcurrentMap(Function, Function, BinaryOperator)
@@ -1117,22 +933,10 @@ public final class Collectors {
     }
 
     /**
-     * Accumulate elements into a {@code ConcurrentMap} whose keys and values
-     * are the result of applying mapping functions to the input elements. If
-     * the mapped keys contains duplicates (according to {@link Object#equals(Object)}),
-     * the value mapping function is applied to each equal element, and the
-     * results are merged using the provided merging function.
+     * 写像関数の結果をキーと値として、要素を{@code ConcurrentMap}に累積する。もし写像されたキーが({@link Object#equals(Object)}に従って)重複を含む場合は、等価な各要素に対して値に写像する関数が適用され、用意された併合関数により結果が併合される。
      *
      * @apiNote
-     * There are multiple ways to deal with collisions between multiple elements
-     * mapping to the same key.  There are some predefined merging functions,
-     * such as {@link #throwingMerger()}, {@link #firstWinsMerger()}, and
-     * {@link #lastWinsMerger()}, that implement common policies, or you can
-     * implement custom policies easily.  For example, if you have a stream
-     * of {@code Person}, and you want to produce a "phone book" mapping name to
-     * address, but it is possible that two persons have the same name, you can
-     * do as follows to gracefully deals with these collisions, and produce a
-     * {@code Map} mapping names to a concatenated list of addresses:
+     * 同じキーに写像される要素間の衝突を処理する方法は複数ある。{@link #throwingMerger()}や{@link #firstWinsMerger()}や{@link #lastWinsMerger()}といった、よくある方針を実装した併合関数も予め用意されているし、カスタム方針の実装も簡単にできる。例えば、{@code Person}があり、名前から住所を結び付ける「電話帳」を作りたいとする。しかし別の人が同じ名前を持つこともあるため、次のように、上品にそういった衝突を処理し、名前から住所を連結したリストを結び付けた{@code Map}を生成できる。
      * <pre>{@code
      *     Map<String, String> phoneBook
      *         people.stream().collect(toConcurrentMap(Person::getName,
@@ -1140,22 +944,15 @@ public final class Collectors {
      *                                                 (s, a) -> s + ", " + a));
      * }</pre>
      *
-     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
-     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     * <p>これは{@link Collector.Characteristics#CONCURRENT 並行的}で{@link Collector.Characteristics#UNORDERED 順序付けられていない}Collectorである。
      *
-     * @param <T> the type of the input elements
-     * @param <K> the output type of the key mapping function
-     * @param <U> the output type of the value mapping function
-     * @param keyMapper a mapping function to produce keys
-     * @param valueMapper a mapping function to produce values
-     * @param mergeFunction a merge function, used to resolve collisions between
-     *                      values associated with the same key, as supplied
-     *                      to {@link Map#merge(Object, Object, BiFunction)}
-     * @return a concurrent {@code Collector} which collects elements into a
-     * {@code ConcurrentMap} whose keys are the result of applying a key mapping
-     * function to the input elements, and whose values are the result of
-     * applying a value mapping function to all input elements equal to the key
-     * and combining them using the merge function
+     * @param <T> 入力要素の型
+     * @param <K> キーに写像する関数の出力型
+     * @param <U> 値に写像する関数の出力型
+     * @param keyMapper キーを生成する写像関数
+     * @param valueMapper 値を生成する写像関数
+     * @param mergeFunction {@link Map#merge(Object, Object, BiFunction)}に与えられる関数と同様に、同じキーに割り当てられた値の衝突を解決する併合関数。
+     * @return キーに写像する関数の結果をキーとし、値に写像する関数の値の結果を、キーが同じになる値全てを併合関数で併合した結果を値として、要素を{@code ConcurrentMap}に集める並行{@code Collector}
      *
      * @see #toConcurrentMap(Function, Function)
      * @see #toConcurrentMap(Function, Function, BinaryOperator, Supplier)
@@ -1169,32 +966,19 @@ public final class Collectors {
     }
 
     /**
-     * Accumulate elements into a {@code ConcurrentMap} whose keys and values
-     * are the result of applying mapping functions to the input elements. If
-     * the mapped keys contains duplicates (according to {@link Object#equals(Object)}),
-     * the value mapping function is applied to each equal element, and the
-     * results are merged using the provided merging function.  The
-     * {@code ConcurrentMap} is created by a provided supplier function.
+     * 写像関数の結果をキーと値として、要素を{@code ConcurrentMap}に累積する。もし写像されたキーが({@link Object#equals(Object)}に従って)重複を含む場合は、等価な各要素に対して値に写像する関数が適用され、用意された併合関数により結果が併合される。{@code Map}は与えらえたファクトリ関数によって作成される。
      *
-     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
-     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     * <p>これは{@link Collector.Characteristics#CONCURRENT 並行的}で{@link Collector.Characteristics#UNORDERED 順序付けられていない}Collectorである。
      *
-     * @param <T> the type of the input elements
-     * @param <K> the output type of the key mapping function
-     * @param <U> the output type of the value mapping function
+     * @param <T> 入力要素の型
+     * @param <K> キーに写像する関数の出力型
+     * @param <U> 値に写像する関数の出力型
      * @param <M> the type of the resulting {@code ConcurrentMap}
-     * @param keyMapper a mapping function to produce keys
-     * @param valueMapper a mapping function to produce values
-     * @param mergeFunction a merge function, used to resolve collisions between
-     *                      values associated with the same key, as supplied
-     *                      to {@link Map#merge(Object, Object, BiFunction)}
-     * @param mapSupplier a function which returns a new, empty {@code Map} into
-     *                    which the results will be inserted
-     * @return a concurrent {@code Collector} which collects elements into a
-     * {@code ConcurrentMap} whose keys are the result of applying a key mapping
-     * function to the input elements, and whose values are the result of
-     * applying a value mapping function to all input elements equal to the key
-     * and combining them using the merge function
+     * @param keyMapper キーを生成する写像関数
+     * @param valueMapper 値を生成する写像関数
+     * @param mergeFunction {@link Map#merge(Object, Object, BiFunction)}に与えられる関数と同様に、同じキーに割り当てられた値の衝突を解決する併合関数。
+     * @param mapSupplier 結果を挿入するための、新しい空の{@code Map}を返す関数
+     * @return キーに写像する関数の結果をキーとし、値に写像する関数の値の結果を、キーが同じになる値全てを併合関数で併合した結果を値として、要素を{@code ConcurrentMap}に集める並行{@code Collector}
      *
      * @see #toConcurrentMap(Function, Function)
      * @see #toConcurrentMap(Function, Function, BinaryOperator)
@@ -1213,13 +997,11 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} which applies an {@code int}-producing
-     * mapping function to each input element, and returns summary statistics
-     * for the resulting values.
+     * 各入力要素に{@code int}を返す関数を適用し、結果の値に対する要約統計量を返す{@code Collector}を返す。
      *
-     * @param <T> the type of the input elements
-     * @param mapper a mapping function to apply to each element
-     * @return a {@code Collector} implementing the summary-statistics reduction
+     * @param <T> 入力要素の型
+     * @param mapper 各要素に適用する写像関数
+     * @return 要約統計簡約を実装する{@code Collector}
      *
      * @see #toDoubleSummaryStatistics(ToDoubleFunction)
      * @see #toLongSummaryStatistics(ToLongFunction)
@@ -1232,13 +1014,11 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} which applies an {@code long}-producing
-     * mapping function to each input element, and returns summary statistics
-     * for the resulting values.
+     * 各入力要素に{@code long}を返す関数を適用し、結果の値に対する要約統計量を返す{@code Collector}を返す。
      *
-     * @param <T> the type of the input elements
-     * @param mapper the mapping function to apply to each element
-     * @return a {@code Collector} implementing the summary-statistics reduction
+     * @param <T> 入力要素の型
+     * @param mapper 各要素に適用する写像関数
+     * @return 要約統計簡約を実装する{@code Collector}
      *
      * @see #toDoubleSummaryStatistics(ToDoubleFunction)
      * @see #toIntSummaryStatistics(ToIntFunction)
@@ -1251,13 +1031,11 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} which applies an {@code double}-producing
-     * mapping function to each input element, and returns summary statistics
-     * for the resulting values.
+     * 各入力要素に{@code double}を返す関数を適用し、結果の値に対する要約統計量を返す{@code Collector}を返す。
      *
-     * @param <T> the type of the input elements
-     * @param mapper a mapping function to apply to each element
-     * @return a {@code Collector} implementing the summary-statistics reduction
+     * @param <T> 入力要素の型
+     * @param mapper 各要素に適用する写像関数
+     * @return 要約統計簡約を実装する{@code Collector}
      *
      * @see #toLongSummaryStatistics(ToLongFunction)
      * @see #toIntSummaryStatistics(ToIntFunction)
