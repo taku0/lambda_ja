@@ -31,106 +31,60 @@ import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 
 /**
- * 累積的な結果に値を畳み込む<a href="package-summary.html#Reduction">簡約処理</a>
- * The result may be
- * a value or may be a mutable result container.  Examples of operations
- * accumulating results into a mutable result container include: accumulating
- * input elements into a {@code Collection}; concatenating strings into a
- * {@code StringBuilder}; computing summary information about elements such as
- * sum, min, max, or average; computing "pivot table" summaries such as "maximum
- * valued transaction by seller", etc.  Reduction operations can be performed
- * either sequentially or in parallel.
+ * 累積的な結果に値を畳み込む<a href="package-summary.html#Reduction">簡約処理</a>。
+ * 結果は値であるか、可変的な結果コンテナである。可変的な結果コンテナに結果を累積する例としては次のようなものが挙げられる。結果を{@code Collection}に累積する、{@code StringBuilder}に文字列を連結する、要素について合計・最小値・最大値・平均値といった要約情報を計算する、「販売者ごとの最も大きな取り引き」といったような「ピボットテーブル」要約を計算する。簡約処理は逐次的にも並列的にも実行できる。
  *
- * <p>The following are examples of using the predefined {@code Collector}
- * implementations in {@link Collectors} with the {@code Stream} API to perform
- * mutable reduction tasks:
+ * <p>次のコードは予め定義された{@code Collector}の実装を{@code Stream} APIと使って可変的簡約作業を実行する例である。
+ *
  * <pre>{@code
- *     // Accumulate elements into a List
+ *     // 要素をListに累積する
  *     List<String> list = stream.collect(Collectors.toList());
  *
- *     // Accumulate elements into a TreeSet
+ *     // 要素をTreeSetに累積する
  *     Set<String> list = stream.collect(Collectors.toCollection(TreeSet::new));
  *
- *     // Convert elements to strings and concatenate them, separated by commas
+ *     // 要素も文字列に変換し、カンマで区切って連結する
  *     String joined = stream.map(Object::toString)
  *                           .collect(Collectors.toStringJoiner(", "))
  *                           .toString();
  *
- *     // Find highest-paid employee
+ *     // 最も給料が高い従業員を求める
  *     Employee highestPaid = employees.stream()
  *                                     .collect(Collectors.maxBy(Comparators.comparing(Employee::getSalary)));
  *
- *     // Group employees by department
+ *     // 部署ごとに従業員をグループ化する
  *     Map<Department, List<Employee>> byDept
  *         = employees.stream()
  *                    .collect(Collectors.groupingBy(Employee::getDepartment));
  *
- *     // Find highest-paid employee by department
+ *     // 部署ごとに最も給料が高い従業員を求める
  *     Map<Department, Employee> highestPaidByDept
  *         = employees.stream()
  *                    .collect(Collectors.groupingBy(Employee::getDepartment,
  *                                                   Collectors.maxBy(Comparators.comparing(Employee::getSalary))));
  *
- *     // Partition students into passing and failing
+ *     // 学生を合格者と不合格者に分ける
  *     Map<Boolean, List<Student>> passingFailing =
  *         students.stream()
  *                 .collect(Collectors.partitioningBy(s -> s.getGrade() >= PASS_THRESHOLD);
  *
  * }</pre>
  *
- * <p>A {@code Collector} is specified by three functions that work together to
- * manage a result or result container.  They are: creation of an initial
- * result, incorporating a new data element into a result, and combining two
- * results into one. The last function -- combining two results into one -- is
- * used during parallel operations, where subsets of the input are accumulated
- * in parallel, and then the subresults merged into a combined result. The
- * result may be a mutable container or a value.  If the result is mutable, the
- * accumulation and combination functions may either mutate their left argument
- * and return that (such as adding elements to a collection), or return a new
- * result, in which case it should not perform any mutation.
+ * <p>{@code Collector}は結果や結果コンテナを協調して扱う3つの関数によって記述される。つまり、初期結果の生成・新しいデータ要素の結果への取り込み・2つの結果の1つへの統合である。最後の関数(2つの結果の1つへの統合)は並列処理の際に使われる。入力の部分部分が並列に累積され、その後に各部分の結果が併合され統合された結果となる。結果は可変的なコンテナや値である。もし結果が可変的であれば、累積関数や統合関数は左の引数を変更(要素をコレクションに追加するなど)してそれを返してもよいし、変更を加えるべきでない場合は新しい値を返してもよい。
  *
- * <p>Collectors also have a set of characteristics, including
- * {@link Characteristics#CONCURRENT} and
- * {@link Characteristics#STRICTLY_MUTATIVE}.  These characteristics provide
- * hints that can be used by a reduction implementation to provide better
- * performance.
+ * <p>Collectorは{@link Characteristics#CONCURRENT}や{@link Characteristics#STRICTLY_MUTATIVE}といった特性の集合を備える。これらの特性は簡約の実装がより良い性能を出すためのヒントとして扱われる。
  *
- * <p>Libraries that implement reduction based on {@code Collector}, such as
- * {@link Stream#collect(Collector)}, must adhere to the following constraints:
+ * <p>{@link Stream#collect(Collector)}のように、{@code Collector}に基いて簡約を実装するライブラリは次の制約を遵守する必要がある。
  * <ul>
- *     <li>The first argument passed to the accumulator function, and both
- *     arguments passed to the combiner function, must be the result of a
- *     previous invocation of {@link #resultSupplier()}, {@link #accumulator()},
- *     or {@link #combiner()}.</li>
- *     <li>The implementation should not do anything with the result of any of
- *     the result supplier, accumulator, or combiner functions other than to
- *     pass them again to the accumulator or combiner functions, or return them
- *     to the caller of the reduction operation.</li>
- *     <li>If a result is passed to the accumulator or combiner function, and
- *     the same object is not returned from that function, it is never used
- *     again.</li>
- *     <li>Once a result is passed to the combiner function, it is never passed
- *     to the accumulator function again.</li>
- *     <li>For non-concurrent collectors, any result returned from the result
- *     supplier, accumulator, or combiner functions must be serially
- *     thread-confined.  This enables collection to occur in parallel without
- *     the {@code Collector} needing to implement any additional synchronization.
- *     The reduction implementation must manage that the input is properly
- *     partitioned, that partitions are processed in isolation, and combining
- *     happens only after accumulation is complete.</li>
- *     <li>For concurrent collectors, an implementation is free to (but not
- *     required to) implement reduction concurrently.  A concurrent reduction
- *     is one where the accumulator function is called concurrently from
- *     multiple threads, using the same concurrently-modifiable result container,
- *     rather than keeping the result isolated during accumulation.
- *     A concurrent reduction should only be applied if the collector has the
- *     {@link Characteristics#UNORDERED} characteristics or if the
- *     originating data is unordered.</li>
+ *     <li>累積関数に与えられる第1引数と、統合関数に与えられる両方の引数は{@link #resultSupplier()}や{@link #accumulator()}や{@link #combiner()}に対する以前の呼び出しの結果である必要がある。</li>
+ *     <li>実装は、ファクトリ関数・累積関数・統合関数の結果に対して、累積関数や統合関数に再び渡すか簡約処理の呼び出し側へ返すか以外してはいけない。</li>
+ *     <li>もし結果が累積関数か統合関数に渡され、同じオブジェクトがそれらの関数から返されなかった場合は、それを再び利用してはいけない。</li>
+ *     <li>並行的でないコレクタに対しては、結果のファクトリ関数・累積関数・統合関数から返された結果は、逐次的にスレッドに閉じ込められている(serially thread-confined)必要がある。これにより{@code Collector}が余分な同期処理を実装しなくても収集を並列的に実行できるようになる。簡約の実装は、入力が重なりを持たずに分割され、分割処理は他の処理から分離して進行され、統合処理は累積処理が完了した後にのみ起きるようにやりくりする必要がある。</li>
+ *     <li>並行的なコレクタに対しては、簡約の実装は簡約を並行的に実装してもよい(しかし必ずする必要はない)。並行的な簡約とは、累積中に結果を隔離するのではなく、並列的に変更可能な同じ結果コンテナを使って累積関数が複数のスレッドから並行的に呼ばれる簡約である。並行的簡約はコレクタが{@link Characteristics#UNORDERED}特性を持つか、元のデータが順序を持たないときにのみ適用されるべきである。</li>
  * </ul>
  *
  * @apiNote
- * Performing a reduction operation with a {@code Collector} should produce a
- * result equivalent to:
+ * {@code Collector}を使った簡約処理は次のコードと同じ結果を生成するべきである。
  * <pre>{@code
  *     BiFunction<R,T,R> accumulator = collector.accumulator();
  *     R result = collector.resultSupplier().get();
@@ -139,77 +93,49 @@ import java.util.function.Supplier;
  *     return result;
  * }</pre>
  *
- * <p>However, the library is free to partition the input, perform the reduction
- * on the partitions, and then use the combiner function to combine the partial
- * results to achieve a parallel reduction.  Depending on the specific reduction
- * operation, this may perform better or worse, depending on the relative cost
- * of the accumulator and combiner functions.
+ * <p>しかし、ライブラリは入力を分割し、部分部分に簡約を適用し、統合関数を使って部分的な結果を統合して、並列簡約を実現してもよい。 具体的な簡約処理によっては、これはより性能が良い場合もあれば悪い場合もある。これは累積関数と統合関数の相対的なコストに依存する。
  *
- * <p>An example of an operation that can be easily modeled by {@code Collector}
- * is accumulating elements into a {@code TreeSet}. In this case, the {@code
- * resultSupplier()} function is {@code () -> new Treeset<T>()}, the
- * {@code accumulator} function is
- * {@code (set, element) -> { set.add(element); return set; }}, and the combiner
- * function is {@code (left, right) -> { left.addAll(right); return left; }}.
- * (This behavior is implemented by
- * {@code Collectors.toCollection(TreeSet::new)}).
+ * <p>{@code Collector}によって簡単にモデル化できる処理の例は、{@code TreeSet}に要素を累積する処理である。この場合、{@code resultSupplier()}関数は{@code () -> new Treeset<T>()}であり、{@code accumulator}関数は{@code (set, element) -> { set.add(element); return set; }}であり、統合関数は{@code (left, right) -> { left.addAll(right); return left; }}である(この挙動は{@code Collectors.toCollection(TreeSet::new)}によって実装されている)。
  *
- * TODO Associativity and commutativity
+ * TODO  結合性と可換性
  *
  * @see Stream#collect(Collector)
  * @see Collectors
  *
- * @param <T> the type of input element to the collect operation
- * @param <R> the result type of the collect operation
+ * @param <T> 収集処理の入力要素の型
+ * @param <R> 収集処理の結果型
  * @since 1.8
  */
 public interface Collector<T, R> {
     /**
-     * A function that creates and returns a new result that represents
-     * "no values".  If the accumulator or combiner functions may mutate their
-     * arguments, this must be a new, empty result container.
+     * 「値が無い」状態を表す新しい結果を作成して返す関数。もし累積関数や統合関数がその引数を変更する場合、これは新しい空の結果コンテナである必要がある。
      *
-     * @return a function which, when invoked, returns a result representing
-     * "no values"
+     * @return 呼び出された際に「値が無い」状態を表す結果を返す関数。
      */
     Supplier<R> resultSupplier();
 
     /**
-     * A function that folds a new value into a cumulative result.  The result
-     * may be a mutable result container or a value.  The accumulator function
-     * may modify a mutable container and return it, or create a new result and
-     * return that, but if it returns a new result object, it must not modify
-     * any of its arguments.
+     * 累積結果に新しい値を畳み込む関数。結果は可変な結果コンテナでもよいし、値でもよい。累積関数は可変的なコンテナを変更してそれを返してもよいし、新しい結果を作成してそれを返してもよいが、新しい結果オブジェクトを返した場合はどの引数も変更してはならない。
      *
-     * <p>If the collector has the {@link Characteristics#STRICTLY_MUTATIVE}
-     * characteristic, then the accumulator function <em>must</em> always return
-     * its first argument, after possibly mutating its state.
+     * <p>もしコレクタが{@link Characteristics#STRICTLY_MUTATIVE}特性を持つ場合、累積関数は第1引数の状態を変更(またはそのままに)した後に、第1引数を<em>必ず返す必要がある</em>。
      *
-     * @return a function which folds a new value into a cumulative result
+     * @return 累積結果に新しい値を畳み込む関数
      */
     BiFunction<R, T, R> accumulator();
 
     /**
-     * A function that accepts two partial results and merges them.  The
-     * combiner function may fold state from one argument into the other and
-     * return that, or may return a new result object, but if it returns
-     * a new result object, it must not modify the state of either of its
-     * arguments.
+     * 部分的な結果を2つ取ってそれらを併合する関数。統合関数は片方の引数をもう片方に畳み込んでそれを返してもよいし、新しい結果オブジェクトを返してもよいが、新しい結果オブジェクトを返す場合は、どちらの引数の状態も変更してはならない。
+     * 
+     * <p>もしコレクタが{@link Characteristics#STRICTLY_MUTATIVE}特性を持つ場合、統合関数は第1引数の状態を変更(またはそのままに)した後に、第1引数を<em>必ず返す必要がある</em>。
      *
-     * <p>If the collector has the {@link Characteristics#STRICTLY_MUTATIVE}
-     * characteristic, then the combiner function <em>must</em> always return
-     * its first argument, after possibly mutating its state.
-     *
-     * @return a function which combines two partial results into a cumulative
-     * result
+     * @return 2つの部分的な結果を累積結果に統合する関数
      */
     BinaryOperator<R> combiner();
 
     /**
-     * Returns a {@code Set} of {@code Collector.Characteristics} indicating
-     * the characteristics of this Collector.  This set should be immutable.
+     * このCollectorの特性を表す{@code Collector.Characteristics}の{@code Set}を返す。この集合は不変であるべきである。
      *
-     * @return an immutable set of collector characteristics
+     * @return コレクタの特性の不変な集合
      */
     Set<Characteristics> characteristics();
 
@@ -218,30 +144,19 @@ public interface Collector<T, R> {
      */
     enum Characteristics {
         /**
-         * Indicates that this collector is <em>concurrent</em>, meaning that
-         * the result container can support the accumulator function being
-         * called concurrently with the same result container from multiple
-         * threads. Concurrent collectors must also always have the
-         * {@code STRICTLY_MUTATIVE} characteristic.
+         * このコレクタが<em>並行的</em>であるという特性を表す。つまり結果コンテナは累積関数がその結果コンテナに対して複数のスレッドから並行的に呼べるような仕様になっているという特性を表す。並行的なコレクタは{@code STRICTLY_MUTATIVE}特性を常に持つ必要がある。
          *
-         * <p>If a {@code CONCURRENT} collector is not also {@code UNORDERED},
-         * then it should only be evaluated concurrently if applied to an
-         * unordered data source.
+         * <p>もし{@code CONCURRENT}コレクタが{@code UNORDERED}でない場合、そのコレクタは順序を持たないデータ源に対してのみ並行的に評価されるべきである。
          */
         CONCURRENT,
 
         /**
-         * Indicates that the result container has no intrinsic order, such as
-         * a {@link Set}.
+         * {@link Set}のように、結果コンテナは本質的な順序を持たないという特性を表す。
          */
         UNORDERED,
 
         /**
-         * Indicates that this collector operates by strict mutation of its
-         * result container. This means that the {@link #accumulator()} and
-         * {@link #combiner()} functions will always modify the state of and
-         * return their first argument, rather than returning a different result
-         * container.
+         * このコレクタが厳密に結果コンテナに対する変更によって動作するという特性を示す。つまり、{@link #accumulator()}関数と{@link #combiner()}関数は、異なる結果コンテナを返すのではなく、常に第1引数の状態を変更してそれを返すという特性を表す。
          */
         STRICTLY_MUTATIVE
     }
