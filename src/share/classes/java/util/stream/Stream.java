@@ -198,7 +198,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Stream<T> sorted(Comparator<? super T> comparator);
 
     /**
-     * このストリームの要素からなり、加えて要素が消費されるごとにその要素にアクションを実行するストリーム
+     * このストリームの要素からなり、加えて要素が消費されるごとにその要素にアクションを実行するストリームを返す。
      *
      * <p>これは <a href="package-summary.html#StreamOps">中間処理</a>である。
      *
