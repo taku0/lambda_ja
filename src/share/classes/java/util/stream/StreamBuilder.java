@@ -30,52 +30,39 @@ import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 /**
- * {@code Stream}の可変なビルダ。
- * This allows the creation of a
- * {@code Stream} by generating elements individually and adding them to the
- * {@code StreamBuilder} (without the copying overhead that comes from using
- * an {@code ArrayList} as a temporary buffer.)
+ * {@code Stream}の可変なビルダ。これにより要素を個別に生成して{@code StreamBuilder}へ追加して({@code ArrayList}を一時バッファとして使った場合の複製のオーバーヘッド無しに){@code Stream}を作成できるようになる。
  *
- * <p>A {@code StreamBuilder} has a lifecycle, where it starts in a building
- * phase, during which elements can be added, and then transitions to a built
- * phase, after which elements may not be added.  The built phase begins
- * when the {@link #build()}} method is called, which creates an ordered
- * {@code Stream} whose elements are the elements that were added to the stream
- * builder, in the order they were added.
+ * <p>{@code StreamBuilder}はライフサイクルを持ち、要素を追加できる構築中段階から始まり、要素を追加できなくなる構築済段階に移行する。構築済段階は{@link #build()}メソッドが呼ばれた段階で開始し、{@link #build()}メソッドはこのストリームビルダに追加された要素を追加された順序で要素として持つ{@code Stream}を作成する。
  *
- * <p>Primitive specializations of {@code StreamBuilder} are provided
- * for {@link OfInt int}, {@link OfLong long}, and {@link OfDouble double}
- * values.
+ * <p>プリミティブ値に特化した{@code StreamBuilder}が{@link OfInt int}や{@link OfLong long}や{@link OfDouble double}の値のために用意されている。
  *
- * @param <T> the type of stream elements
+ * @param <T> ストリーム要素の型
  * @see Stream#builder()
  * @since 1.8
  */
 public interface StreamBuilder<T> extends Consumer<T> {
 
     /**
-     * Adds an element to the stream being built.
+     * 構築中のストリームに要素を追加する。
      *
-     * @throws IllegalStateException if the builder has already transitioned to
-     * the built state
+     * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
      */
     @Override
     void accept(T t);
 
     /**
-     * Adds an element to the stream being built.
+     * 構築中のストリームに要素を追加する。
      *
      * @implSpec
-     * The default implementation behaves as if:
+     * デフォルト実装は次のように振る舞う。
      * <pre>{@code
      *     accept(t)
      *     return this;
      * }</pre>
      *
-     * @param t the element to add
-     * @return {@code this} builder
-     * @throws IllegalStateException if the builder has already transitioned to
-     * the built state
+     * @param t 追加する要素
+     * @return ビルダである{@code this}
+     * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
      */
     default StreamBuilder<T> add(T t) {
         accept(t);
@@ -83,25 +70,17 @@ public interface StreamBuilder<T> extends Consumer<T> {
     }
 
     /**
-     * Builds the stream, transitioning this builder to the built state.
-     * An {@code IllegalStateException} is thrown if there are further attempts
-     * to operate on the builder after it has entered the built state.
+     * ストリームを構築し、このビルダを構築済段階に移行させる。このビルダに対してさらなる処理をしようとすると{@code IllegalStateException}が投げられる。
      *
-     * @return the built stream
-     * @throws IllegalStateException if the builder has already transitioned to
-     * the built state
+     * @return 構築されたストリーム
+     * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
      */
     Stream<T> build();
 
     /**
      * {@code IntStream}の可変なビルダ。
      *
-     * <p>A stream builder has a lifecycle, where it starts in a building
-     * phase, during which elements can be added, and then transitions to a
-     * built phase, after which elements may not be added.  The built phase
-     * begins when the {@link #build()}} method is called, which creates an
-     * ordered stream whose elements are the elements that were added to the
-     * stream builder, in the order they were added.
+     * <p>ストリームビルダはライフサイクルを持ち、要素を追加できる構築中段階から始まり、要素を追加できなくなる構築済段階に移行する。構築済段階は{@link #build()}メソッドが呼ばれた段階で開始し、{@link #build()}メソッドはこのストリームビルダに追加された要素を追加された順序で要素として持つストリームを作成する。 
      *
      * @see IntStream#builder()
      * @since 1.8
@@ -109,28 +88,26 @@ public interface StreamBuilder<T> extends Consumer<T> {
     interface OfInt extends IntConsumer {
 
         /**
-         * Adds an element to the stream being built.
+         * 構築中のストリームに要素を追加する。
          *
-         * @throws IllegalStateException if the builder has already transitioned
-         * to the built state
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         @Override
         void accept(int t);
 
         /**
-         * Adds an element to the stream being built.
+         * 構築中のストリームに要素を追加する。
          *
          * @implSpec
-         * The default implementation behaves as if:
+         * デフォルト実装は次のように振る舞う。
          * <pre>{@code
          *     accept(t)
          *     return this;
          * }</pre>
          *
-         * @param t the element to add
-         * @return {@code this} builder
-         * @throws IllegalStateException if the builder has already transitioned
-         * to the built state
+         * @param t 追加する要素
+         * @return ビルダである{@code this}
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         default StreamBuilder.OfInt add(int t) {
             accept(t);
@@ -138,14 +115,10 @@ public interface StreamBuilder<T> extends Consumer<T> {
         }
 
         /**
-         * Builds the stream, transitioning this builder to the built state.
-         * An {@code IllegalStateException} is thrown if there are further
-         * attempts to operate on the builder after it has entered the built
-         * state.
+         * ストリームを構築し、このビルダを構築済段階に移行させる。このビルダに対してさらなる処理をしようとすると{@code IllegalStateException}が投げられる。
          *
-         * @return the built stream
-         * @throws IllegalStateException if the builder has already transitioned to
-         * the built state
+         * @return 構築されたストリーム
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         IntStream build();
     }
@@ -153,12 +126,7 @@ public interface StreamBuilder<T> extends Consumer<T> {
     /**
      * {@code LongStream}の可変なビルダ。
      *
-     * <p>A stream builder has a lifecycle, where it starts in a building
-     * phase, during which elements can be added, and then transitions to a
-     * built phase, after which elements may not be added.  The built phase
-     * begins when the {@link #build()}} method is called, which creates an
-     * ordered stream whose elements are the elements that were added to the
-     * stream builder, in the order they were added.
+     * <p>ストリームビルダはライフサイクルを持ち、要素を追加できる構築中段階から始まり、要素を追加できなくなる構築済段階に移行する。構築済段階は{@link #build()}メソッドが呼ばれた段階で開始し、{@link #build()}メソッドはこのストリームビルダに追加された要素を追加された順序で要素として持つストリームを作成する。 
      *
      * @see LongStream#builder()
      * @since 1.8
@@ -166,28 +134,26 @@ public interface StreamBuilder<T> extends Consumer<T> {
     interface OfLong extends LongConsumer {
 
         /**
-         * Adds an element to the stream being built.
+         * 構築中のストリームに要素を追加する。
          *
-         * @throws IllegalStateException if the builder has already transitioned
-         * to the built state
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         @Override
         void accept(long t);
 
         /**
-         * Adds an element to the stream being built.
+         * 構築中のストリームに要素を追加する。
          *
          * @implSpec
-         * The default implementation behaves as if:
+         * デフォルト実装は次のように振る舞う。
          * <pre>{@code
          *     accept(t)
          *     return this;
          * }</pre>
          *
-         * @param t the element to add
-         * @return {@code this} builder
-         * @throws IllegalStateException if the builder has already transitioned
-         * to the built state
+         * @param t 追加する要素
+         * @return ビルダである{@code this}
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         default StreamBuilder.OfLong add(long t) {
             accept(t);
@@ -195,14 +161,10 @@ public interface StreamBuilder<T> extends Consumer<T> {
         }
 
         /**
-         * Builds the stream, transitioning this builder to the built state.
-         * An {@code IllegalStateException} is thrown if there are further
-         * attempts to operate on the builder after it has entered the built
-         * state.
+         * ストリームを構築し、このビルダを構築済段階に移行させる。このビルダに対してさらなる処理をしようとすると{@code IllegalStateException}が投げられる。
          *
-         * @return the built stream
-         * @throws IllegalStateException if the builder has already transitioned
-         * to the built state
+         * @return 構築されたストリーム
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         LongStream build();
     }
@@ -210,41 +172,37 @@ public interface StreamBuilder<T> extends Consumer<T> {
     /**
      * {@code DoubleStream}の可変なビルダ.
      *
+     * (訳註: ここにあるはずの文章がaccpetのところにコピペミスされている)
+     * 
      * @see LongStream#builder()
      * @since 1.8
      */
     interface OfDouble extends DoubleConsumer {
 
         /**
-         * Adds an element to the stream being built.
+         * 構築中のストリームに要素を追加する。
          *
-         * <p>A stream builder  has a lifecycle, where it starts in a building
-         * phase, during which elements can be added, and then transitions to a
-         * built phase, after which elements may not be added.  The built phase
-         * begins when the {@link #build()}} method is called, which creates an
-         * ordered stream whose elements are the elements that were added to the
-         * stream builder, in the order they were added.
+         * <p>ストリームビルダはライフサイクルを持ち、要素を追加できる構築中段階から始まり、要素を追加できなくなる構築済段階に移行する。構築済段階は{@link #build()}メソッドが呼ばれた段階で開始し、{@link #build()}メソッドはこのストリームビルダに追加された要素を追加された順序で要素として持つストリームを作成する。
+         * (訳註: おそらくコピペミス)
          *
-         * @throws IllegalStateException if the builder has already transitioned
-         * to the built state
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         @Override
         void accept(double t);
 
         /**
-         * Adds an element to the stream being built.
+         * 構築中のストリームに要素を追加する。
          *
          * @implSpec
-         * The default implementation behaves as if:
+         * デフォルト実装は次のように振る舞う。
          * <pre>{@code
          *     accept(t)
          *     return this;
          * }</pre>
          *
-         * @param t the element to add
-         * @return {@code this} builder
-         * @throws IllegalStateException if the builder has already transitioned
-         * to the built state
+         * @param t 追加する要素
+         * @return ビルダである{@code this}
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         default StreamBuilder.OfDouble add(double t) {
             accept(t);
@@ -252,14 +210,10 @@ public interface StreamBuilder<T> extends Consumer<T> {
         }
 
         /**
-         * Builds the stream, transitioning this builder to the built state.
-         * An {@code IllegalStateException} is thrown if there are further
-         * attempts to operate on the builder after it has entered the built
-         * state.
+         * ストリームを構築し、このビルダを構築済段階に移行させる。このビルダに対してさらなる処理をしようとすると{@code IllegalStateException}が投げられる。
          *
-         * @return the built stream
-         * @throws IllegalStateException if the builder has already transitioned
-         * to the built state
+         * @return 構築されたストリーム
+         * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
         DoubleStream build();
     }
