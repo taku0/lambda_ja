@@ -45,8 +45,7 @@ import java.util.function.ToLongFunction;
 /**
  * 他の{@code Stream}に処理を委譲する{@code Stream}の実装。
  *
- * @param <T> type of stream elements for this stream and underlying delegate
- * stream
+ * @param <T> このストリームと裏にある委譲先ストリームのストリーム要素の型
  *
  * @since 1.8
  */
@@ -54,12 +53,10 @@ public class DelegatingStream<T> implements Stream<T> {
     final private Stream<T> delegate;
 
     /**
-     * Construct a {@code Stream} that delegates operations to another {@code
-     * Stream}.
+     * 処理を他の{@code Stream}に委譲する{@code Stream}を構築する。
      *
-     * @param delegate the underlying {@link Stream} to which we delegate all
-     *                 {@code Stream} methods
-     * @throws NullPointerException if the delegate is null
+     * @param delegate {@code DelegatingStream}が全ての{@code Stream}メソッドを委譲する、裏にある{@link Stream}
+     * @throws NullPointerException 委譲先がnullの場合
      */
     public DelegatingStream(Stream<T> delegate) {
         this.delegate = Objects.requireNonNull(delegate);
