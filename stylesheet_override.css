@@ -3,6 +3,10 @@ body {
 }
 
 pre, code, tt, dt code, table tr td dt code {
-    font-size:1em;
+    font-size: 1em;
 }
 
+em {
+    font-style: normal;
+    font-weight: bold;
+}
