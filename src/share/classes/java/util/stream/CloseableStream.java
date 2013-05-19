@@ -27,29 +27,17 @@ package java.util.stream;
 
 /**
  * {@code CloseableStream}は閉じられる{@code Stream}である。
- * The close method is invoked to release resources that the object is
- * holding (such as open files).
+ * closeメソッドはオブジェクトが保持している資源(開いているファイルなど)を開放するために呼び出される。
  *
- * @param <T> The type of stream elements
+ * @param <T> ストリーム要素の型
  * @since 1.8
  */
 public interface CloseableStream<T> extends Stream<T>, AutoCloseable {
 
     /**
-     * Closes this resource, relinquishing any underlying resources.
-     * This method is invoked automatically on objects managed by the
-     * {@code try}-with-resources statement.  Does nothing if called when
-     * the resource has already been closed.
+     * この資源を閉じ、裏にある資源を放棄する。このメソッドは{@code try}-with-resources文によって管理されているオブジェクトに対しては自動的に呼び出される。資源が既に閉じられている場合は呼ばれても何もしない。
      *
-     * This method does not allow throwing checked {@code Exception}s like
-     * {@link AutoCloseable#close() AutoCloseable.close()}. Cases where the
-     * close operation may fail require careful attention by implementers. It
-     * is strongly advised to relinquish the underlying resources and to
-     * internally <em>mark</em> the resource as closed. The {@code close}
-     * method is unlikely to be invoked more than once and so this ensures
-     * that the resources are released in a timely manner. Furthermore it
-     * reduces problems that could arise when the resource wraps, or is
-     * wrapped, by another resource.
+     * このメソッドはチェックされる{@code Exception}を{@link AutoCloseable#close() AutoCloseable.close()}のようには投げられない。閉じる処理が失敗するかもしれない場合は実装者による慎重な配慮が必要とされる。裏にある資源を放棄し、この資源が閉じられたと内部的に<em>印を付ける</em>ように強く勧められる。{@code close}メソッドは普通1回よりも多くは呼ばれないため、これは資源の素早い開放を保障する。さらに、これはこの資源が他の資源を包んだ場合や他の資源に包まれた場合に起き得る問題を減らす。
      *
      * @see AutoCloseable#close()
      */
