@@ -31,34 +31,23 @@ import java.util.function.Supplier;
 /**
  * ストリームの作成および操作のための低水準ユーティリティメソッド群。
  *
- * <p>This class is mostly for library writers presenting stream views
- * of their data structures; most static stream methods for end users are in
- * {@link Streams}.
+ * <p>このクラスは専らデータ構造に対してストリームとしてのビューを提供するライブラリ作者用である。一般利用者向けのほとんどの静的メソッドは{@link Streams}にある。
  *
- * <p>Unless otherwise stated, streams are created as sequential
- * streams.  A sequential stream can be transformed into a parallel stream by
- * calling the {@code parallel()} method on the created stream.
+ * <p>特に明記されない限り、ストリームは逐次的ストリームとして作成される。逐次ストリームは作成したストリームの{@code parallel()}メソッドの呼び出しにより並列ストリームに変換できる。
  *
  * @since 1.8
  */
 public class StreamSupport {
     /**
-     * Creates a new sequential {@code Stream} from a {@code Spliterator}.
+     * {@code Spliterator}から新しい逐次{@code Stream}を作成する。
      *
-     * <p>The spliterator is only traversed, split, or queried for estimated
-     * size after the terminal operation of the stream pipeline commences.
+     * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>It is strongly recommended the spliterator report a characteristic of
-     * {@code IMMUTABLE} or {@code CONCURRENT}, or be
-     * <a href="Spliterator.html#binding">late-binding</a>.  Otherwise,
-     * {@link #stream(Supplier, int)} should be used to
-     * reduce the scope of potential interference with the source.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #stream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
-     * @param <T> the type of stream elements
-     * @param spliterator a {@code Spliterator} describing the stream elements
-     * @return a new sequential {@code Stream}
+     * @param <T> ストリーム要素の型
+     * @param spliterator ストリーム要素を記述する{@code Spliterator}
+     * @return 新しい逐次{@code Stream}
      */
     public static <T> Stream<T> stream(Spliterator<T> spliterator) {
         Objects.requireNonNull(spliterator);
@@ -68,22 +57,15 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new parallel {@code Stream} from a {@code Spliterator}.
+     * {@code Spliterator}から新しい並列{@code Stream}を作成する。
      *
-     * <p>The spliterator is only traversed, split, or queried for estimated
-     * size after the terminal operation of the stream pipeline commences.
+     * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>It is strongly recommended the spliterator report a characteristic of
-     * {@code IMMUTABLE} or {@code CONCURRENT}, or be
-     * <a href="Spliterator.html#binding">late-binding</a>.  Otherwise,
-     * {@link #stream(Supplier, int)} should be used to
-     * reduce the scope of potential interference with the source.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #parallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
-     * @param <T> the type of stream elements
-     * @param spliterator a {@code Spliterator} describing the stream elements
-     * @return a new parallel {@code Stream}
+     * @param <T> ストリーム要素の型
+     * @param spliterator ストリーム要素を記述する{@code Spliterator}
+     * @return 新しい並列{@code Stream}
      */
     public static <T> Stream<T> parallelStream(Spliterator<T> spliterator) {
         Objects.requireNonNull(spliterator);
@@ -93,31 +75,16 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new sequential {@code Stream} from a {@code Supplier} of
-     * {@code Spliterator}.
+     * {@code Spliterator}の{@code Supplier}から新しい逐次{@code Stream}を作成する。
      *
-     * <p>The {@link Supplier#get()} method will be invoked on the supplier no
-     * more than once, and after the terminal operation of the stream pipeline
-     * commences.
+     * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。
      *
-     * <p>For spliterators that report a characteristic of {@code IMMUTABLE}
-     * or {@code CONCURRENT}, or that are
-     * <a href="Spliterator.html#binding">late-binding</a>, it is likely
-     * more efficient to use {@link #stream(java.util.Spliterator)} instead.
-     * The use of a {@code Supplier} in this form provides a level of
-     * indirection that reduces the scope of potential interference with the
-     * source.  Since the supplier is only invoked after the terminal operation
-     * commences, any modifications to the source up to the start of the
-     * terminal operation are reflected in the stream result.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #stream(java.util.Spliterator)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
-     * @param <T> the type of stream elements
-     * @param supplier a {@code Supplier} of a {@code Spliterator}
-     * @param characteristics Spliterator characteristics of the supplied
-     *        {@code Spliterator}.  The characteristics must be equal to
-     *        {@code source.get().getCharacteristics()}.
-     * @return a new sequential {@code Stream}
+     * @param <T> ストリーム要素の型
+     * @param supplier {@code Spliterator}の{@code Supplier}
+     * @param characteristics 与えられた{@code Spliterator}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
+     * @return 新しい逐次{@code Stream}
      * @see #stream(Spliterator)
      */
     public static <T> Stream<T> stream(Supplier<? extends Spliterator<T>> supplier,
@@ -129,31 +96,16 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new parallel {@code Stream} from a {@code Supplier} of
-     * {@code Spliterator}.
+     * {@code Spliterator}の{@code Supplier}から新しい並列{@code Stream}を作成する。
      *
-     * <p>The {@link Supplier#get()} method will be invoked on the supplier no
-     * more than once, and after the terminal operation of the stream pipeline
-     * commences.
+     * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。
      *
-     * <p>For spliterators that report a characteristic of {@code IMMUTABLE}
-     * or {@code CONCURRENT}, or that are
-     * <a href="Spliterator.html#binding">late-binding</a>, it is likely
-     * more efficient to use {@link #stream(Spliterator)} instead.
-     * The use of a {@code Supplier} in this form provides a level of
-     * indirection that reduces the scope of potential interference with the
-     * source.  Since the supplier is only invoked after the terminal operation
-     * commences, any modifications to the source up to the start of the
-     * terminal operation are reflected in the stream result.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #parallelStream(java.util.Spliterator)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
-     * @param <T> the type of stream elements
-     * @param supplier a {@code Supplier} of a {@code Spliterator}
-     * @param characteristics Spliterator characteristics of the supplied
-     *        {@code Spliterator}.  The characteristics must be equal to
-     *        {@code source.get().getCharacteristics()}
-     * @return a new parallel {@code Stream}
+     * @param <T> ストリーム要素の型
+     * @param supplier {@code Spliterator}の{@code Supplier}
+     * @param characteristics 与えられた{@code Spliterator}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
+     * @return 新しい並列{@code Stream}
      * @see #parallelStream(Spliterator)
      */
     public static <T> Stream<T> parallelStream(Supplier<? extends Spliterator<T>> supplier,
@@ -165,21 +117,14 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new sequential {@code IntStream} from a {@code Spliterator.OfInt}.
+     * {@code Spliterator.OfInt}から新しい逐次{@code IntStream}を作成する。
      *
-     * <p>The spliterator is only traversed, split, or queried for estimated size
-     * after the terminal operation of the stream pipeline commences.
+     * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>It is strongly recommended the spliterator report a characteristic of
-     * {@code IMMUTABLE} or {@code CONCURRENT}, or be
-     * <a href="Spliterator.html#binding">late-binding</a>.  Otherwise,
-     * {@link #stream(Supplier, int)}} should be used to
-     * reduce the scope of potential interference with the source.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #intStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
      *
-     * @param spliterator a {@code Spliterator.OfInt} describing the stream elements
-     * @return a new sequential {@code IntStream}
+     * @param spliterator ストリーム要素を記述する{@code Spliterator.OfInt}
+     * @return 新しい逐次{@code IntStream}
      */
     public static IntStream intStream(Spliterator.OfInt spliterator) {
         return new IntPipeline.Head<>(spliterator,
@@ -188,21 +133,14 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new parallel {@code IntStream} from a {@code Spliterator.OfInt}.
+     * {@code Spliterator.OfInt}から新しい並列{@code IntStream}を作成する。
      *
-     * <p>he spliterator is only traversed, split, or queried for estimated size
-     * after the terminal operation of the stream pipeline commences.
+     * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。 
      *
-     * <p>It is strongly recommended the spliterator report a characteristic of
-     * {@code IMMUTABLE} or {@code CONCURRENT}, or be
-     * <a href="Spliterator.html#binding">late-binding</a>.  Otherwise,
-     * {@link #stream(Supplier, int)}} should be used to
-     * reduce the scope of potential interference with the source.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #intParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
      *
-     * @param spliterator a {@code Spliterator.OfInt} describing the stream elements
-     * @return a new parallel {@code IntStream}
+     * @param spliterator ストリーム要素を記述する{@code Spliterator.OfInt}
+     * @return 新しい並列{@code IntStream}
      */
     public static IntStream intParallelStream(Spliterator.OfInt spliterator) {
         return new IntPipeline.Head<>(spliterator,
@@ -211,30 +149,15 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new sequential {@code IntStream} from a {@code Supplier} of
-     * {@code Spliterator.OfInt}.
+     * {@code Spliterator.OfInt}の{@code Supplier}から新しい逐次{@code IntStream}を作成する。
      *
-     * <p>The {@link Supplier#get()} method will be invoked on the supplier no
-     * more than once, and after the terminal operation of the stream pipeline
-     * commences.
+     * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>For spliterators that report a characteristic of {@code IMMUTABLE}
-     * or {@code CONCURRENT}, or that are
-     * <a href="Spliterator.html#binding">late-binding</a>, it is likely
-     * more efficient to use {@link #intStream(Spliterator.OfInt)} instead.
-     * The use of a {@code Supplier} in this form provides a level of
-     * indirection that reduces the scope of potential interference with the
-     * source.  Since the supplier is only invoked after the terminal operation
-     * commences, any modifications to the source up to the start of the
-     * terminal operation are reflected in the stream result.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #intStream(java.util.Spliterator.OfInt)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
      *
-     * @param supplier a {@code Supplier} of a {@code Spliterator.OfInt}
-     * @param characteristics Spliterator characteristics of the supplied
-     *        {@code Spliterator.OfInt}.  The characteristics must be equal to
-     *        {@code source.get().getCharacteristics()}
-     * @return a new sequential {@code IntStream}
+     * @param supplier {@code Spliterator.OfInt}の{@code Supplier}
+     * @param characteristics 与えられた{@code Spliterator.OfInt}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
+     * @return 新しい逐次{@code IntStream}
      * @see #intStream(Spliterator.OfInt)
      */
     public static IntStream intStream(Supplier<? extends Spliterator.OfInt> supplier,
@@ -245,30 +168,15 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new parallel {@code IntStream} from a {@code Supplier} of
-     * {@code Spliterator.OfInt}.
+     * {@code Spliterator.OfInt}の{@code Supplier}から新しい並列{@code IntStream}を作成する。
      *
-     * <p>The {@link Supplier#get()} method will be invoked on the supplier no
-     * more than once, and after the terminal operation of the stream pipeline
-     * commences.
+     * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>For spliterators that report a characteristic of {@code IMMUTABLE}
-     * or {@code CONCURRENT}, or that are
-     * <a href="Spliterator.html#binding">late-binding</a>, it is likely
-     * more efficient to use {@link #intStream(Spliterator.OfInt)} instead.
-     * The use of a {@code Supplier} in this form provides a level of
-     * indirection that reduces the scope of potential interference with the
-     * source.  Since the supplier is only invoked after the terminal operation
-     * commences, any modifications to the source up to the start of the
-     * terminal operation are reflected in the stream result.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #intParallelStream(java.util.Spliterator.OfInt)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
-     * @param supplier a {@code Supplier} of a {@code Spliterator.OfInt}
-     * @param characteristics Spliterator characteristics of the supplied
-     *        {@code Spliterator.OfInt}.  The characteristics must be equal to
-     *        {@code source.get().getCharacteristics()}
-     * @return a new parallel {@code IntStream}
+     * @param supplier {@code Spliterator.OfInt}の{@code Supplier}
+     * @param characteristics 与えられた{@code Spliterator.OfInt}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
+     * @return 新しい並列{@code IntStream}
      * @see #intParallelStream(Spliterator.OfInt)
      */
     public static IntStream intParallelStream(Supplier<? extends Spliterator.OfInt> supplier,
@@ -279,22 +187,14 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new sequential {@code LongStream} from a {@code Spliterator.OfLong}.
+     * {@code Spliterator.OfLong}から新しい逐次{@code LongStream}を作成する。
      *
-     * <p>The spliterator is only traversed, split, or queried for estimated
-     * size after the terminal operation of the stream pipeline commences.
+     * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>It is strongly recommended the spliterator report a characteristic of
-     * {@code IMMUTABLE} or {@code CONCURRENT}, or be
-     * <a href="Spliterator.html#binding">late-binding</a>.  Otherwise,
-     * {@link #stream(Supplier, int)} should be used to
-     * reduce the scope of potential interference with the source.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #longStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
      *
-     * @param spliterator a {@code Spliterator.OfLong} describing the stream
-     * elements
-     * @return a new sequential {@code LongStream}
+     * @param spliterator ストリーム要素を記述する{@code Spliterator.OfLong}
+     * @return 新しい逐次{@code LongStream}
      */
     public static LongStream longStream(Spliterator.OfLong spliterator) {
         return new LongPipeline.Head<>(spliterator,
@@ -303,21 +203,14 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new parallel {@code LongStream} from a {@code Spliterator.OfLong}.
+     * {@code Spliterator.OfLong}から新しい並列{@code LongStream}を作成する。
      *
-     * <p>The spliterator is only traversed, split, or queried for estimated
-     * size after the terminal operation of the stream pipeline commences.
+     * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。 
      *
-     * <p>It is strongly recommended the spliterator report a characteristic of
-     * {@code IMMUTABLE} or {@code CONCURRENT}, or be
-     * <a href="Spliterator.html#binding">late-binding</a>.  Otherwise,
-     * {@link #stream(Supplier, int)} should be used to
-     * reduce the scope of potential interference with the source.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #longParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
      *
-     * @param spliterator a {@code Spliterator.OfLong} describing the stream elements
-     * @return a new parallel {@code LongStream}
+     * @param spliterator ストリーム要素を記述する{@code Spliterator.OfLong}
+     * @return 新しい並列{@code LongStream}
      */
     public static LongStream longParallelStream(Spliterator.OfLong spliterator) {
         return new LongPipeline.Head<>(spliterator,
@@ -326,30 +219,15 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new sequential {@code LongStream} from a {@code Supplier} of
-     * {@code Spliterator.OfLong}.
+     * {@code Spliterator.OfLong}の{@code Supplier}から新しい逐次{@code LongStream}を作成する。
      *
-     * <p>The {@link Supplier#get()} method will be invoked on the supplier no
-     * more than once, and after the terminal operation of the stream pipeline
-     * commences.
+     * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>For spliterators that report a characteristic of {@code IMMUTABLE}
-     * or {@code CONCURRENT}, or that are
-     * <a href="Spliterator.html#binding">late-binding</a>, it is likely
-     * more efficient to use {@link #longStream(Spliterator.OfLong)} instead.
-     * The use of a {@code Supplier} in this form provides a level of
-     * indirection that reduces the scope of potential interference with the
-     * source.  Since the supplier is only invoked after the terminal operation
-     * commences, any modifications to the source up to the start of the
-     * terminal operation are reflected in the stream result.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #longStream(java.util.Spliterator.OfLong)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
      *
-     * @param supplier a {@code Supplier} of a {@code Spliterator.OfLong}
-     * @param characteristics Spliterator characteristics of the supplied
-     *        {@code Spliterator.OfLong}.  The characteristics must be equal to
-     *        {@code source.get().getCharacteristics()}
-     * @return a new sequential {@code LongStream}
+     * @param supplier {@code Spliterator.OfLong}の{@code Supplier}
+     * @param characteristics 与えられた{@code Spliterator.OfLong}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
+     * @return 新しい逐次{@code LongStream}
      * @see #longStream(Spliterator.OfLong)
      */
     public static LongStream longStream(Supplier<? extends Spliterator.OfLong> supplier,
@@ -360,30 +238,15 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new parallel {@code LongStream} from a {@code Supplier} of
-     * {@code Spliterator.OfLong}.
+     * {@code Spliterator.OfLong}の{@code Supplier}から新しい並列{@code LongStream}を作成する。
      *
-     * <p>The {@link Supplier#get()} method will be invoked on the supplier no
-     * more than once, and after the terminal operation of the stream pipeline
-     * commences.
+     * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>For spliterators that report a characteristic of {@code IMMUTABLE}
-     * or {@code CONCURRENT}, or that are
-     * <a href="Spliterator.html#binding">late-binding</a>, it is likely
-     * more efficient to use {@link #longStream(Spliterator.OfLong)} instead.
-     * The use of a {@code Supplier} in this form provides a level of
-     * indirection that reduces the scope of potential interference with the
-     * source.  Since the supplier is only invoked after the terminal operation
-     * commences, any modifications to the source up to the start of the
-     * terminal operation are reflected in the stream result.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #longParallelStream(java.util.Spliterator.OfLong)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。
      *
-     * @param supplier A {@code Supplier} of a {@code Spliterator.OfLong}
-     * @param characteristics Spliterator characteristics of the supplied
-     *        {@code Spliterator.OfLong}.  The characteristics must be equal to
-     *        {@code source.get().getCharacteristics()}
-     * @return A new parallel {@code LongStream}
+     * @param supplier {@code Spliterator.OfLong}の{@code Supplier}
+     * @param characteristics 与えられた{@code Spliterator.OfLong}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
+     * @return 新しい並列{@code LongStream}
      * @see #longParallelStream(Spliterator.OfLong)
      */
     public static LongStream longParallelStream(Supplier<? extends Spliterator.OfLong> supplier,
@@ -394,22 +257,14 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new sequential {@code DoubleStream} from a
-     * {@code Spliterator.OfDouble}.
+     * {@code Spliterator.OfDouble}から新しい逐次{@code DoubleStream}を作成する。
      *
-     * <p>The spliterator is only traversed, split, or queried for estimated size
-     * after the terminal operation of the stream pipeline commences.
+     * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>It is strongly recommended the spliterator report a characteristic of
-     * {@code IMMUTABLE} or {@code CONCURRENT}, or be
-     * <a href="Spliterator.html#binding">late-binding</a>.  Otherwise,
-     * {@link #stream(Supplier, int)} should be used to
-     * reduce the scope of potential interference with the source.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #doubleStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
      *
-     * @param spliterator A {@code Spliterator.OfDouble} describing the stream elements
-     * @return A new sequential {@code DoubleStream}
+     * @param spliterator ストリーム要素を記述する{@code Spliterator.OfDouble}
+     * @return 新しい逐次{@code DoubleStream}
      */
     public static DoubleStream doubleStream(Spliterator.OfDouble spliterator) {
         return new DoublePipeline.Head<>(spliterator,
@@ -418,22 +273,14 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new parallel {@code DoubleStream} from a
-     * {@code Spliterator.OfDouble}.
+     * {@code Spliterator.OfDouble}から新しい並列{@code DoubleStream}を作成する。
      *
-     * <p>The spliterator is only traversed, split, or queried for estimated size
-     * after the terminal operation of the stream pipeline commences.
+     * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。 
      *
-     * <p>It is strongly recommended the spliterator report a characteristic of
-     * {@code IMMUTABLE} or {@code CONCURRENT}, or be
-     * <a href="Spliterator.html#binding">late-binding</a>.  Otherwise,
-     * {@link #stream(Supplier, int)} should be used to
-     * reduce the scope of potential interference with the source.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #doubleParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
      *
-     * @param spliterator A {@code Spliterator.OfDouble} describing the stream elements
-     * @return A new parallel {@code DoubleStream}
+     * @param spliterator ストリーム要素を記述する{@code Spliterator.OfDouble}
+     * @return 新しい並列{@code DoubleStream}
      */
     public static DoubleStream doubleParallelStream(Spliterator.OfDouble spliterator) {
         return new DoublePipeline.Head<>(spliterator,
@@ -442,30 +289,15 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new sequential {@code DoubleStream} from a {@code Supplier} of
-     * {@code Spliterator.OfDouble}.
-     * <p>
-     * The {@link Supplier#get()} method will be invoked on the supplier no
-     * more than once, and after the terminal operation of the stream pipeline
-     * commences.
-     * <p>
-     * For spliterators that report a characteristic of {@code IMMUTABLE}
-     * or {@code CONCURRENT}, or that are
-     * <a href="Spliterator.html#binding">late-binding</a>, it is likely
-     * more efficient to use {@link #doubleStream(Spliterator.OfDouble)} instead.
-     * The use of a {@code Supplier} in this form provides a level of
-     * indirection that reduces the scope of potential interference with the
-     * source.  Since the supplier is only invoked after the terminal operation
-     * commences, any modifications to the source up to the start of the
-     * terminal operation are reflected in the stream result.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * {@code Spliterator.OfDouble}の{@code Supplier}から新しい逐次{@code DoubleStream}を作成する。
      *
-     * @param supplier A {@code Supplier} of a {@code Spliterator.OfDouble}
-     * @param characteristics Spliterator characteristics of the supplied
-     *        {@code Spliterator.OfDouble}.  The characteristics must be equal to
-     *        {@code source.get().getCharacteristics()}
-     * @return A new sequential {@code DoubleStream}
+     * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
+     *
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #doubleStream(java.util.Spliterator.OfDouble)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
+     *
+     * @param supplier {@code Spliterator.OfDouble}の{@code Supplier}
+     * @param characteristics 与えられた{@code Spliterator.OfDouble}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
+     * @return 新しい逐次{@code DoubleStream}
      * @see #doubleStream(Spliterator.OfDouble)
      */
     public static DoubleStream doubleStream(Supplier<? extends Spliterator.OfDouble> supplier,
@@ -476,30 +308,15 @@ public class StreamSupport {
     }
 
     /**
-     * Creates a new parallel {@code DoubleStream} from a {@code Supplier} of
-     * {@code Spliterator.OfDouble}.
+     * {@code Spliterator.OfDouble}の{@code Supplier}から新しい並列{@code DoubleStream}を作成する。
      *
-     * <p>The {@link Supplier#get()} method will be invoked on the supplier no
-     * more than once, and after the terminal operation of the stream pipeline
-     * commences.
+     * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>For spliterators that report a characteristic of {@code IMMUTABLE}
-     * or {@code CONCURRENT}, or that are
-     * <a href="Spliterator.html#binding">late-binding</a>, it is likely
-     * more efficient to use {@link #doubleStream(Spliterator.OfDouble)} instead.
-     * The use of a {@code Supplier} in this form provides a level of
-     * indirection that reduces the scope of potential interference with the
-     * source.  Since the supplier is only invoked after the terminal operation
-     * commences, any modifications to the source up to the start of the
-     * terminal operation are reflected in the stream result.  See
-     * <a href="package-summary.html#Non-Interference">Non-Interference</a> for
-     * more details.
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #doubleParallelStream(java.util.Spliterator.OfDouble)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。
      *
-     * @param supplier a {@code Supplier} of a {@code Spliterator.OfDouble}
-     * @param characteristics Spliterator characteristics of the supplied
-     *        {@code Spliterator.OfDouble}.  The characteristics must be equal to
-     *        {@code source.get().getCharacteristics()}
-     * @return a new parallel {@code DoubleStream}
+     * @param supplier {@code Spliterator.OfDouble}の{@code Supplier}
+     * @param characteristics 与えられた{@code Spliterator.OfDouble}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
+     * @return 新しい並列{@code DoubleStream}
      * @see #doubleParallelStream(Spliterator.OfDouble)
      */
     public static DoubleStream doubleParallelStream(Supplier<? extends Spliterator.OfDouble> supplier,
