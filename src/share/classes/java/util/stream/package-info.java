@@ -76,7 +76,7 @@
  *
  * <h3>並列性</h3>
  *
- * 集約処理を値のストリームに対する処理のパイプラリンに書き直すと、多くの集約処理はより簡単に並列化できる。{@code Stream}は逐次的(serial)にも並列的(parallel)にも実行できる。ストリームは作られる際に逐次的ストリームか並列的ストリームとして作られる。ストリームの並列性は{@link java.util.stream Stream#sequential()}処理と{@link java.util.stream.Stream#parallel()}処理によっても切り換えられる。JDKで実装されている{@code Stream}は並列性が明示的に要求されない限り逐次ストリームを作成する。例えば、{@code Collection}は{@link java.util.Collection#stream}メソッドと{@link java.util.Collection#parallelStream}メソッドを持ち、それぞれ逐次的ストリームと並列的ストリームを生成する。{@link java.util.stream.Streams#intRange(int, int)}などの他のストリームを生じるメソッドは逐次的ストリームを生成するが、結果に対して{@code parallel()}を呼ぶと効率的に並列化できる。逐次的ストリームと並列的ストリームには同一の処理が用意されている。「ブロックの重さの合計」を問い合わせる処理を並列的にするには次のようにする。
+ * 集約処理を値のストリームに対する処理のパイプラリンに書き直すと、多くの集約処理はより簡単に並列化できる。{@code Stream}は逐次的(serial)にも並列的(parallel)にも実行できる。ストリームは作られる際に逐次的ストリームか並列的ストリームとして作られる。ストリームの並列性は{@link java.util.stream.Stream#sequential()}処理と{@link java.util.stream.Stream#parallel()}処理によっても切り換えられる。JDKで実装されている{@code Stream}は並列性が明示的に要求されない限り逐次ストリームを作成する。例えば、{@code Collection}は{@link java.util.Collection#stream}メソッドと{@link java.util.Collection#parallelStream}メソッドを持ち、それぞれ逐次的ストリームと並列的ストリームを生成する。{@link java.util.stream.IntStream#range(int, int)}などの他のストリームを生じるメソッドは逐次的ストリームを生成するが、結果に対して{@code parallel()}を呼ぶと効率的に並列化できる。逐次的ストリームと並列的ストリームには同一の処理が用意されている。「ブロックの重さの合計」を問い合わせる処理を並列的にするには次のようにする。
  * 
  * <pre>{@code
  *     int sumOfWeights = blocks.parallelStream().filter(b -> b.getColor() == RED)
