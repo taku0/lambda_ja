@@ -58,12 +58,12 @@ import java.util.function.UnaryOperator;
  *
  * <p>逐次的なストリームパイプラインの場合、パイプラインのデータ源に<a href="package-summary.html#Ordering">出現順順序</a>が定義されていれば、全ての処理はその出現順順序に従って実行される。
  *
- * <p>並列的なストリームパイプラインの場合、特に明記されていないかぎり、パイプラインのデータ源に<a href="package-summary.html#Ordering">出現順順序</a>が定義されていれば、中間ストリーム処理はデータ源の出現順順序を保存し、末端処理はデータ源の出現順順序を尊重する。ストリーム処理に対する引数が<a href="package-summary.html#NonInterference">非干渉性要求</a>を満たす場合、出現順順序が無い場合に起きる違いを除いて、同じデータ源に対して同じ処理を複数実行した結果は変化しない。しかし、ストリームパイプラインの並列実行において、({@link #forEach(Consumer)}のような副作用を起こしてもよい処理から)副作用が生じるタイミングとスレッドは明示的に非決定的である。
+ * <p>並列的なストリームパイプラインの場合、特に明記されていないかぎり、パイプラインのデータ源に<a href="package-summary.html#Ordering">出現順順序</a>が定義されていれば、中間ストリーム処理はデータ源の出現順順序を保存し、末端処理はデータ源の出現順順序を尊重する。ストリーム処理に対する引数が<a href="package-summary.html#NonInterference">非干渉性要求</a>を満たす場合、出現順順序が無い場合に起きる違いを除いて、同じデータ源に対して同じ処理を複数実行しても結果は変化しない。しかし、ストリームパイプラインの並列実行において、({@link #forEach(Consumer)}のような副作用を起こしてもよい処理から)副作用が生じるタイミングとスレッドは明示的に非決定的である。
  *
  * <p>特に明記していない限り、ストリームメソッドに対して{@code null}引数を与えると{@link NullPointerException}となる場合がある。
  *
  * @apiNote
- * ストリームはデータ構造でない。ストリームは要素のために保存領域を管理しないし、個々の要素へのアクセス手段を用意しない。しかし、{@link #iterator()}や{@link #spliterator()}を使うと制御された走査ができる。
+ * ストリームはデータ構造でない。ストリームは要素のために保存領域を管理しないし、個々の要素へのアクセス手段を用意しない。しかし、{@link #iterator()}や{@link #spliterator()}を使えば制御された走査はできる。
  *
  * @param <T> 要素の型
  * @since 1.8
@@ -299,7 +299,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * 与えられた単位元と、<a href="package-summary.html#Associativity">結合的</a>な累積関数を使って、このストリームの要素に<a href="package-summary.html#Reduction">簡約</a>処理を実行して簡約された値を返す。これは次と等しい。
      * <pre>{@code
      *     T result = identity;
-     *     for (T element : this stream)
+     *     for (T element : このストリーム)
      *         result = accumulator.apply(result, element)
      *     return result;
      * }</pre>
@@ -335,7 +335,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * <pre>{@code
      *     boolean foundAny = false;
      *     T result = null;
-     *     for (T element : this stream) {
+     *     for (T element : このストリーム) {
      *         if (!foundAny) {
      *             foundAny = true;
      *             result = element;
@@ -364,7 +364,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * 与えられた単位元と累積関数と統合関数を使って、このストリームの要素に<a href="package-summary.html#Reduction">簡約</a>処理を実行して簡約された値を返す。これは次と等しい。
      * <pre>{@code
      *     U result = identity;
-     *     for (T element : this stream)
+     *     for (T element : このストリーム)
      *         result = accumulator.apply(result, element)
      *     return result;
      * }</pre>
@@ -397,7 +397,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * このストリームの要素に<a href="package-summary.html#MutableReduction">可変的簡約</a>を実行する。可変的簡約は、簡約した値が{@code ArrayList}などの可変な値を保持するものであり、結果を置き換えるのではなく結果の状態を変更して各要素を組み入れるような簡約である。これは次のコードと同じ結果を生成する。
      * <pre>{@code
      *     R result = resultFactory.get();
-     *     for (T element : this stream)
+     *     for (T element : このストリーム)
      *         accumulator.accept(result, element);
      *     return result;
      * }</pre>
