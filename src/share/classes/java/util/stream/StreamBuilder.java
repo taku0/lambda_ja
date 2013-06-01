@@ -172,7 +172,7 @@ public interface StreamBuilder<T> extends Consumer<T> {
     /**
      * {@code DoubleStream}の可変なビルダ.
      *
-     * (訳註: ここにあるはずの文章がaccpetのところにコピペミスされている)
+     * <p>ストリームビルダはライフサイクルを持ち、要素を追加できる構築中段階から始まり、要素を追加できなくなる構築済段階に移行する。構築済段階は{@link #build()}メソッドが呼ばれた段階で開始し、{@link #build()}メソッドはこのストリームビルダに追加された要素を追加された順序で要素として持つストリームを作成する。
      * 
      * @see LongStream#builder()
      * @since 1.8
@@ -181,9 +181,6 @@ public interface StreamBuilder<T> extends Consumer<T> {
 
         /**
          * 構築中のストリームに要素を追加する。
-         *
-         * <p>ストリームビルダはライフサイクルを持ち、要素を追加できる構築中段階から始まり、要素を追加できなくなる構築済段階に移行する。構築済段階は{@link #build()}メソッドが呼ばれた段階で開始し、{@link #build()}メソッドはこのストリームビルダに追加された要素を追加された順序で要素として持つストリームを作成する。
-         * (訳註: おそらくコピペミス)
          *
          * @throws IllegalStateException ビルダが既に構築済段階に移行している場合
          */
