@@ -37,13 +37,17 @@ import java.util.function.Supplier;
  *
  * @since 1.8
  */
-public class StreamSupport {
+public final class StreamSupport {
+
+    // Suppresses default constructor, ensuring non-instantiability.
+    private StreamSupport() {}
+
     /**
      * {@code Spliterator}から新しい逐次{@code Stream}を作成する。
      *
      * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #stream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="../Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #stream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
      * @param <T> ストリーム要素の型
      * @param spliterator ストリーム要素を記述する{@code Spliterator}
@@ -61,7 +65,7 @@ public class StreamSupport {
      *
      * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #parallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="../Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #parallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
      * @param <T> ストリーム要素の型
      * @param spliterator ストリーム要素を記述する{@code Spliterator}
@@ -79,7 +83,7 @@ public class StreamSupport {
      *
      * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。
      *
-     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #stream(java.util.Spliterator)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="../Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #stream(java.util.Spliterator)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
      * @param <T> ストリーム要素の型
      * @param supplier {@code Spliterator}の{@code Supplier}
@@ -100,7 +104,7 @@ public class StreamSupport {
      *
      * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。
      *
-     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #parallelStream(java.util.Spliterator)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="../Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #parallelStream(java.util.Spliterator)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
      * @param <T> ストリーム要素の型
      * @param supplier {@code Spliterator}の{@code Supplier}
@@ -121,7 +125,7 @@ public class StreamSupport {
      *
      * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #intStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="../Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #intStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
      *
      * @param spliterator ストリーム要素を記述する{@code Spliterator.OfInt}
      * @return 新しい逐次{@code IntStream}
@@ -137,7 +141,7 @@ public class StreamSupport {
      *
      * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。 
      *
-     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #intParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="../Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #intParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
      *
      * @param spliterator ストリーム要素を記述する{@code Spliterator.OfInt}
      * @return 新しい並列{@code IntStream}
@@ -153,7 +157,7 @@ public class StreamSupport {
      *
      * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #intStream(java.util.Spliterator.OfInt)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="../Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #intStream(java.util.Spliterator.OfInt)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。 
      *
      * @param supplier {@code Spliterator.OfInt}の{@code Supplier}
      * @param characteristics 与えられた{@code Spliterator.OfInt}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
@@ -172,7 +176,7 @@ public class StreamSupport {
      *
      * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #intParallelStream(java.util.Spliterator.OfInt)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="../Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #intParallelStream(java.util.Spliterator.OfInt)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Interference">非干渉性</a>を参照せよ。
      *
      * @param supplier {@code Spliterator.OfInt}の{@code Supplier}
      * @param characteristics 与えられた{@code Spliterator.OfInt}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
@@ -191,7 +195,7 @@ public class StreamSupport {
      *
      * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #longStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="../Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #longStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
      *
      * @param spliterator ストリーム要素を記述する{@code Spliterator.OfLong}
      * @return 新しい逐次{@code LongStream}
@@ -207,7 +211,7 @@ public class StreamSupport {
      *
      * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。 
      *
-     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #longParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="../Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #longParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
      *
      * @param spliterator ストリーム要素を記述する{@code Spliterator.OfLong}
      * @return 新しい並列{@code LongStream}
@@ -223,7 +227,7 @@ public class StreamSupport {
      *
      * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #longStream(java.util.Spliterator.OfLong)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="../Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #longStream(java.util.Spliterator.OfLong)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。 
      *
      * @param supplier {@code Spliterator.OfLong}の{@code Supplier}
      * @param characteristics 与えられた{@code Spliterator.OfLong}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
@@ -242,7 +246,7 @@ public class StreamSupport {
      *
      * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #longParallelStream(java.util.Spliterator.OfLong)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="../Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #longParallelStream(java.util.Spliterator.OfLong)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Longerference">非干渉性</a>を参照せよ。
      *
      * @param supplier {@code Spliterator.OfLong}の{@code Supplier}
      * @param characteristics 与えられた{@code Spliterator.OfLong}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
@@ -261,7 +265,7 @@ public class StreamSupport {
      *
      * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。
      *
-     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #doubleStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="../Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #doubleStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
      *
      * @param spliterator ストリーム要素を記述する{@code Spliterator.OfDouble}
      * @return 新しい逐次{@code DoubleStream}
@@ -277,7 +281,7 @@ public class StreamSupport {
      *
      * <p>スプリッテレータはストリープパイプラインの末端処理が開始した後にのみ走査・分割・推定サイズの問い合わせをされる。 
      *
-     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #doubleParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
+     * <p>スプリッテレータは{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公表するか、<a href="../Spliterator.html#binding">遅延束縛</a>をするよう強く推奨される。そうでなければデータ源との潜在的な干渉が起きる範囲を減らすために{@link #doubleParallelStream(Supplier, int)}を使うべきである。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
      *
      * @param spliterator ストリーム要素を記述する{@code Spliterator.OfDouble}
      * @return 新しい並列{@code DoubleStream}
@@ -293,7 +297,7 @@ public class StreamSupport {
      *
      * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #doubleStream(java.util.Spliterator.OfDouble)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="../Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #doubleStream(java.util.Spliterator.OfDouble)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。 
      *
      * @param supplier {@code Spliterator.OfDouble}の{@code Supplier}
      * @param characteristics 与えられた{@code Spliterator.OfDouble}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
@@ -312,7 +316,7 @@ public class StreamSupport {
      *
      * <p>ファクトリ関数に対して{@link Supplier#get()}メソッドはストリームパイプラインの末端処理が開始した後に高々1回だけ呼ばれる。 
      *
-     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #doubleParallelStream(java.util.Spliterator.OfDouble)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。
+     * <p>{@code IMMUTABLE}特性や{@code CONCURRENT}特性を公開するスプリッテレータや<a href="../Spliterator.html#binding">遅延束縛</a>をするスプリッテレータは代わりに{@link #doubleParallelStream(java.util.Spliterator.OfDouble)}を使った方がより効率的である可能性が高い。この形式では{@code Supplier}の利用により、データ源との潜在的な干渉の範囲を減らすための1段階の間接参照が与えられる。ファクトリ関数は末端処理が開始した後にのみ呼ばれるため、データ源に対する末端処理の開始までの全ての変更は結果のストリームに反映される。詳細は<a href="package-summary.html#Non-Doubleerference">非干渉性</a>を参照せよ。
      *
      * @param supplier {@code Spliterator.OfDouble}の{@code Supplier}
      * @param characteristics 与えられた{@code Spliterator.OfDouble}の特性。特性は{@code source.get().getCharacteristics()}と等しい必要がある。
