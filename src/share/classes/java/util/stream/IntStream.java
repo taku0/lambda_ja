@@ -442,14 +442,14 @@ public interface IntStream extends BaseStream<Integer, IntStream> {
      *
      * @return このストリームの要素を{@code long}に変換した要素からなる{@code LongStream}
      */
-    LongStream longs();
+    LongStream asLongStream();
 
     /**
      * このストリームの要素を{@code double}に変換した要素からなる{@code DoubleStream}を返す。
      *
      * @return このストリームの要素を{@code double}に変換した要素からなる{@code DoubleStream}
      */
-    DoubleStream doubles();
+    DoubleStream asDoubleStream();
 
     /**
      * このストリームの要素を{@code Integer}にボックス化した要素からなる{@code Stream}を返す。
@@ -561,44 +561,48 @@ public interface IntStream extends BaseStream<Integer, IntStream> {
     }
 
     /**
-     * {@code startInclusive}(この値を含む)から{@code endExclusive}(この値を含まない)まで、1ずつ増加する逐次的な{@code IntStream}を返す。
+     * {@code startInclusive}(この値を含む)から{@code endExclusive}(この値を含まない)まで、{@code 1}ずつ増加する逐次的な{@code IntStream}を返す。
      *
-     * @implSpec
-     * この実装は次のコードと同様に動作する。
+     * @apiNote
+     * <p>増加する値の同等な列は{@code for}ループを使って次のように逐次的に生成できる。
      * <pre>{@code
-     *     intRange(startInclusive, endExclusive, 1);
+     *     for (int i = startInclusive; i < endExclusive ; i++) { ... }
      * }</pre>
      *
      * @param startInclusive 初期値(この値を含む)
-     * @param endExclusive 上界(この値を含まない)
+     * @param endExclusive この値を含まない上界
      * @return {@code int}要素の範囲に対する逐次的な{@code IntStream}
      */
     public static IntStream range(int startInclusive, int endExclusive) {
-        return range(startInclusive, endExclusive, 1);
+        if (startInclusive >= endExclusive) {
+            return empty();
+        } else {
+            return StreamSupport.intStream(
+                    new Streams.RangeIntSpliterator(startInclusive, endExclusive, false));
+        }
     }
 
     /**
-     * {@code startInclusive}(この値を含む)から{@code endExclusive}(この値を含まない)まで、正の{@code step}ずつ増加する逐次的な{@code IntStream}を返す。もし{@code startInclusive}が{@code endExclusive}以上ならば空のストリームが返される。
+     * {@code startInclusive}(この値を含む)から{@code endInclusive}(この値を含む)まで、{@code 1}ずつ増加する逐次的な{@code IntStream}を返す。
      *
-     * <p>等価な増加列は次のように逐次的に{@code for}ループを使って生成できる。
-     * 
+     * @apiNote
+     * <p>増加する値の同等な列は{@code for}ループを使って次のように逐次的に生成できる。
      * <pre>{@code
-     *     for (int i = startInclusive; i < endExclusive ; i += step) { ... }
+     *     for (int i = startInclusive; i < endExclusive ; i++) { ... }
      * }</pre>
      *
      * @param startInclusive 初期値(この値を含む)
-     * @param endExclusive 上界(この値を含まない)
-     * @param step 隣接した値の正の差分
+     * @param endInclusive この値を含む上界
      * @return {@code int}要素の範囲に対する逐次的な{@code IntStream}
-     * @throws IllegalArgumentException {@code step}が0以下の場合
      */
-    public static IntStream range(int startInclusive, int endExclusive, int step) {
+    public static IntStream rangeClosed(int startInclusive, int endInclusive) {
         if (step <= 0) {
             throw new IllegalArgumentException(String.format("Illegal step: %d", step));
         } else if (startInclusive >= endExclusive) {
             return empty();
         } else {
-            return StreamSupport.intStream(new Streams.RangeIntSpliterator(startInclusive, endExclusive, step));
+            return StreamSupport.intStream(
+                    new Streams.RangeIntSpliterator(startInclusive, endInclusive, true));
         }
     }
 }

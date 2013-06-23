@@ -442,7 +442,7 @@ public interface LongStream extends BaseStream<Long, LongStream> {
      *
      * @return このストリームの要素を{@code double}に変換した要素からなる{@code DoubleStream}
      */
-    DoubleStream doubles();
+    DoubleStream asDoubleStream();
 
     /**
      * このストリームの要素を{@code Long}にボックス化した要素からなる{@code Stream}を返す。
@@ -554,44 +554,64 @@ public interface LongStream extends BaseStream<Long, LongStream> {
     }
 
     /**
-     * {@code startInclusive}(この値を含む)から{@code endExclusive}(この値を含まない)まで、1ずつ増加する逐次的な{@code LongStream}を返す。
+     * {@code startInclusive}(この値を含む)から{@code endExclusive}(この値を含まない)まで、{@code 1}ずつ増加する逐次的な{@code LongStream}を返す。
      *
-     * @implSpec
-     * この実装は次のコードと同様に動作する。
+     * @apiNote
+     * <p>増加する値の同等な列は{@code for}ループを使って次のように逐次的に生成できる。
      * <pre>{@code
-     *     longRange(startInclusive, endExclusive, 1);
+     *     for (long i = startInclusive; i < endExclusive ; i++) { ... }
      * }</pre>
      *
      * @param startInclusive 初期値(この値を含む)
-     * @param endExclusive 上界(この値を含まない)
+     * @param endExclusive この値を含まない上界
      * @return {@code long}要素の範囲に対する逐次的な{@code LongStream}
      */
     public static LongStream range(long startInclusive, final long endExclusive) {
-        return range(startInclusive, endExclusive, 1);
+        if (startInclusive >= endExclusive) {
+            return empty();
+        } else if (endExclusive - startInclusive < 0) {
+            // Size of range > Long.MAX_VALUE
+            // Split the range in two and concatenate
+            // Note: if the range is [Long.MIN_VALUE, Long.MAX_VALUE) then
+            // the lower range, [Long.MIN_VALUE, 0) will be further split in two
+//            long m = startInclusive + Long.divideUnsigned(endExclusive - startInclusive, 2) + 1;
+//            return Streams.concat(range(startInclusive, m), range(m, endExclusive));
+            // This is temporary until Streams.concat is supported
+            throw new UnsupportedOperationException();
+        } else {
+            return StreamSupport.longStream(
+                    new Streams.RangeLongSpliterator(startInclusive, endExclusive, false));
+        }
     }
 
     /**
-     * {@code startInclusive}(この値を含む)から{@code endExclusive}(この値を含まない)まで、{@code step}ずつ増加する逐次的な{@code LongStream}を返す。もし{@code startInclusive}が{@code endExclusive}以上ならば空のストリームが返される。
+     * {@code startInclusive}(この値を含む)から{@code endExclusive}(この値を含む)まで、{@code 1}ずつ増加する逐次的な{@code LongStream}を返す。
      *
-     * <p>等価な増加列は次のように逐次的に{@code for}ループを使って生成できる。
-     * 
+     * <p>増加する値の同等な列は{@code for}ループを使って次のように逐次的に生成できる。
      * <pre>{@code
-     *     for (long i = startInclusive; i < endExclusive ; i += step) { ... }
+     *     for (long i = startInclusive; i <= endExclusive ; i++) { ... }
      * }</pre>
      *
      * @param startInclusive 初期値(この値を含む)
-     * @param endExclusive 上界(この値を含まない)
-     * @param step 隣接した値の正の差分
+     * @param endInclusive この値を含む上界
      * @return {@code long}要素の範囲に対する逐次的な{@code LongStream}
-     * @throws IllegalArgumentException {@code step}が0以下の場合
      */
-    public static LongStream range(long startInclusive, final long endExclusive, final long step) {
-        if (step <= 0) {
-            throw new IllegalArgumentException(String.format("Illegal step: %d", step));
-        } else if (startInclusive >= endExclusive) {
+    public static LongStream rangeClosed(long startInclusive, final long endInclusive) {
+        if (startInclusive > endInclusive) {
             return empty();
+        } else if (endInclusive - startInclusive + 1 <= 0) {
+            // Size of range > Long.MAX_VALUE
+            // Split the range in two and concatenate
+            // Note: if the range is [Long.MIN_VALUE, Long.MAX_VALUE] then
+            // the lower range, [Long.MIN_VALUE, 0), and upper range,
+            // [0, Long.MAX_VALUE], will both be further split in two
+//            long m = startInclusive + Long.divideUnsigned(endInclusive - startInclusive, 2) + 1;
+//            return Streams.concat(range(startInclusive, m), rangeClosed(m, endInclusive));
+            // This is temporary until Streams.concat is supported
+            throw new UnsupportedOperationException();
         } else {
-            return StreamSupport.longStream(new Streams.RangeLongSpliterator(startInclusive, endExclusive, step));
+            return StreamSupport.longStream(
+                    new Streams.RangeLongSpliterator(startInclusive, endInclusive, true));
         }
     }
 }
