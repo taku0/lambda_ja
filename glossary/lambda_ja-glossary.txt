@@ -1,0 +1,37 @@
+provided	用意される
+has	持つ、備える
+ordered	順序を持つ
+unordered	順序を持たない
+encounter order	出現順、出現順順序
+source	情報源
+map	写像
+filter	絞り込み
+reduce	簡約
+intermediate	中間
+terminal	終端
+form	形成する
+lazy	遅延的
+result	成果物
+eager	即時的
+escape hatch	逃げ道
+operation	処理
+short-circuiting	短絡的
+serial	逐次的
+aggregate	集約する
+parallel	並列
+concurrent	並行
+behavior	挙動
+often	である場合が多い
+non-interfering	非干渉的
+Non-interference	非干渉性
+interference	干渉
+interfere	干渉する
+behavioral parameter	挙動パラメータ
+reduction	簡約
+combine	統合
+combiner	統合関数
+accumulator	累積関数
+good reasons	最もな理由
+associativity	結合性
+supplier	供給関数
+finisher	仕上げ関数

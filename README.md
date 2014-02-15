@@ -2,8 +2,7 @@
 
 Java 8のjava.util.streamパッケージのJavadocを非公式に和訳したドキュメントです。
 
-元の文章はまだ書きかけの部分が多々有り、TODOなども書かれています。
-翻訳はまだ途中です。
+JDK 8 Build b128に基いています。 
 
 次の場所に生成したドキュメントを置きました。
 http://www.tatapa.org/~takuo/lambda_ja/javadoc/index.html

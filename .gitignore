@@ -1,2 +1,4 @@
 *~
-/javadoc
+/target
+/omegat/*.bak
+

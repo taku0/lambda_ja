@@ -6,7 +6,16 @@ pre, code, tt, dt code, table tr td dt code {
     font-size: 1em;
 }
 
-em {
+
+em, .deprecationComment, .emphasizedPhrase, .interfaceName {
     font-style: normal;
     font-weight: bold;
+}
+
+div.block {
+    font-family: sans-serif;
+}
+
+h3 {
+    font-style: normal;
 }
